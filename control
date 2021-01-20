@@ -1,0 +1,9 @@
+Package: us.sudhip.sendtodesktop
+Name: SendToDesktop
+Version: 1.0.0
+Architecture: iphoneos-arm
+Description: An awesome MobileSubstrate tweak!
+Maintainer: Sudhip
+Author: Sudhip
+Section: Tweaks
+Depends: mobilesubstrate (>= 0.9.5000), preferenceloader (>= 2.2.3), com.muirey03.libmryipc, us.sudhip.libsunflsks
