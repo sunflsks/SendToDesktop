@@ -1,5 +1,6 @@
 #include "SDPRootListController.h"
 #import <Preferences/PSSpecifier.h>
+#include "../Utils.h"
 
 #define DEFAULTS @"us.sudhip.stdp"
 
@@ -30,7 +31,15 @@
                             ];
 
     NSMutableDictionary* prefs = [[NSMutableDictionary alloc] initWithContentsOfFile: prefsString];
-    [prefs setObject:value forKey:specifier.properties[@"key"]];
+
+    if ([specifier.properties[@"key"] isEqualToString:@"password"]) {
+        setPassword(value);
+    }
+
+    else {
+        [prefs setObject:value forKey:specifier.properties[@"key"]];
+    }
+
     [prefs writeToFile:prefsString atomically:YES];
 }
 

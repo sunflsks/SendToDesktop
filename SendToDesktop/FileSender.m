@@ -27,7 +27,7 @@
     hostName = prefs[@"hostname"];
 
     userName = prefs[@"username"];
-    password = prefs[@"password"];
+    password = getPassword();
 
     remoteDirectory = prefs[@"directory"];
 
