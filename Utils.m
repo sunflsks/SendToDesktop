@@ -22,6 +22,6 @@ NSString* stringWithTimestamp(NSString* input) {
 }
 
 void Log(NSString* tolog) {
-    MRYIPCCenter* center = [MRYIPCCenter centerNamed:@"SendToDesktop/Logger"];
+    MRYIPCCenter* center = [MRYIPCCenter centerNamed:@"SendToDesktop/IPC"];
     [center callExternalMethod:@selector(SDLogger:) withArguments:@{@"message" : tolog}];
 }
