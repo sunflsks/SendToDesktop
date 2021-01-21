@@ -24,13 +24,14 @@
     return [prefs objectForKey:specifier.properties[@"key"]] ?: specifier.properties[@"default"];
 }
 
--(void)writePreferenceValue:(id)value specifier:(PSSpecifier*)specifier {
+-(void)setPreferenceValue:(id)value specifier:(PSSpecifier*)specifier {
     NSString* prefsString = [NSString
                                     stringWithFormat:@"/var/mobile/Library/Preferences/%@.plist",
                                     DEFAULTS
                             ];
 
-    NSMutableDictionary* prefs = [[NSMutableDictionary alloc] initWithContentsOfFile: prefsString];
+    NSMutableDictionary* prefs = [[NSMutableDictionary alloc] init];
+    [prefs addEntriesFromDictionary:[[NSDictionary alloc] initWithContentsOfFile:prefsString]];
 
     if ([specifier.properties[@"key"] isEqualToString:@"password"]) {
         setPassword(value);
