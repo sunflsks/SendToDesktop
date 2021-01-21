@@ -1,12 +1,6 @@
 #import <UIKit/UIKit.h>
 #import "SendToDesktopActivity.h"
-#import <NMSSH/NMSSH.h>
-#import "../Utils.h"
-#import <libsunflsks/Network.h>
-
-static inline void TimeLog(NSString* x) {
-    Log(stringWithTimestamp(x));
-}
+#import "FileSender.h"
 
 @implementation SendToDesktopActivity {
     NSArray* items;
@@ -49,63 +43,18 @@ static inline void TimeLog(NSString* x) {
 
 -(void)performActivity {
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
-        NSDictionary* prefs = dictWithPreferences();
-        int counter = 0;
-        if (![SunflsksNetwork checkIfConnected]) {
-            TimeLog(@"Could not connect to network. Exiting");
-            return;
-        }
-
-        NMSSHSession* remote = [NMSSHSession connectToHost:prefs[@"hostname"] withUsername:prefs[@"username"]];
-
-        if (!remote.isConnected) {
-            TimeLog(@"Could not connect to remote. Exiting");
-            return;
-        }
-
-        [remote authenticateByPassword:prefs[@"password"]];
-
-        if (!remote.isAuthorized) {
-            TimeLog(@"Incorrect credentials. Exiting");
-            [remote disconnect];
-            return;
-        }
-
-        TimeLog(@"Connected to remote!");
-
-        [remote.sftp connect];
-        [remote.sftp createDirectoryAtPath:prefs[@"directory"]];
+        FileSender* fileSender = [[FileSender alloc] init];
 
         for (id object in items) {
-            NSData* dataToSend = nil;
-            NSMutableString* remoteFileName = [NSMutableString string];
-
-            [remoteFileName appendString:[NSString stringWithFormat:@"%@/", prefs[@"directory"]]];
-
-            if ([object isKindOfClass:[UIImage class]]) {
-                dataToSend = UIImageJPEGRepresentation(object, 0);
-                [remoteFileName appendString: [NSString stringWithFormat:@"IMG-%d.jpg", counter]];
-                counter++;
+            if ([object isKindOfClass:[NSURL class]]) {
+                [fileSender sendURL:object];
             }
 
-            else if ([object isKindOfClass:[NSURL class]]) {
-                dataToSend = [[NSData alloc] initWithContentsOfURL:object];
-                [remoteFileName appendString:[object lastPathComponent]];
-            }
-
-            TimeLog([NSString stringWithFormat:@"Saving to remote file with name %@", remoteFileName]);
-
-            if ([remote.sftp writeContents:dataToSend toFileAtPath:remoteFileName] == NO) {
-                TimeLog(@"Couldn't write contents to remote.");
-            }
-
-            else {
-                TimeLog(@"Wrote contents succesfully!");
+            else if ([object isKindOfClass:[UIImage class]]) {
+                [fileSender sendImage:object];
             }
         }
-
-        [remote disconnect];
-        TimeLog(@"Disconnected from remote");
+        [fileSender disconnect];
     });
 }
 

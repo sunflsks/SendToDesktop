@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-#import "SendToDesktopActivity/SendToDesktopActivity.h"
+#import "SendToDesktop/SendToDesktopActivity.h"
 #include <MRYIPCCenter.h>
 
 #define LOG_DEST "/tmp/SendToDesktop.log"
