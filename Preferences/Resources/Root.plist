@@ -47,6 +47,14 @@
             <string>Password</string>
 		</dict>
 
+		<dict>
+            <key>cell</key>
+            <string>PSGroupCell</string>
+
+            <key>footerText</key>
+            <string>Your password will not be shown after it is saved. This is a security feature, not a bug.</string>
+        </dict>
+
         <dict>
             <key>cell</key>
             <string>PSGroupCell</string>
