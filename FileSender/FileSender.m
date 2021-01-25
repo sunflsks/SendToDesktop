@@ -70,12 +70,12 @@
     return [self sendData:data filename:filename];
 }
 
--(BOOL)sendData:(NSData*)data filename:(NSString*)filename{
+-(BOOL)sendData:(NSData*)data filename:(NSString*)filename progress:(BOOL (^)(NSUInteger))progress {
     NSString* remoteFileName = [NSString stringWithFormat:@"%@/%@", remoteDirectory, filename];
 
     TimeLog([NSString stringWithFormat:@"Saving to remote file with name %@", remoteFileName]);
 
-    if (![session.sftp writeContents:data toFileAtPath:remoteFileName]) {
+    if (![session.sftp writeContents:data toFileAtPath:remoteFileName progress:progress]) {
         TimeLog(@"Couldn't write contents to remote.");
         return NO;
     }
@@ -84,6 +84,10 @@
         TimeLog(@"Wrote contents succesfully!");
         return YES;
     }
+}
+
+-(BOOL)sendData:(NSData*)data filename:(NSString*)filename {
+    return [self sendData:data filename:filename progress:nil];
 }
 
 -(void)disconnect {
