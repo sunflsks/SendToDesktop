@@ -6,6 +6,7 @@
 //
 
 #import "SendToDesktopViewController.h"
+#import "../FileSender/FileSender.h"
 
 @interface SendToDesktopViewController ()
 @property(nonatomic)UIProgressView* progressView;
@@ -16,6 +17,7 @@
 
 @implementation SendToDesktopViewController {
     NSArray* array;
+    FileSender* sender;
 }
 
 -(id)initWithArray:(NSArray*)sentArray {
@@ -23,6 +25,7 @@
     if (!self) return nil;
 
     array = sentArray;
+    sender = [[FileSender alloc] init];
 
     if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
         self.view.backgroundColor = [UIColor systemGray5Color];
