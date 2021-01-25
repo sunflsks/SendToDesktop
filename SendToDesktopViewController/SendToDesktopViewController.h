@@ -8,5 +8,5 @@
 #import <UIKit/UIKit.h>
 
 @interface SendToDesktopViewController : UIViewController
--(id)initWithArray:(NSArray*)sentArray;
+-(nullable id)initWithArray:(nonnull NSArray*)sentArray;
 @end
