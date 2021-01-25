@@ -1,6 +1,7 @@
 #import <UIKit/UIKit.h>
 #import "SendToDesktopActivity.h"
 #import "FileSender.h"
+#import "../SendToDesktopViewController/SendToDesktopViewController.h"
 
 @implementation SendToDesktopActivity {
     NSArray* items;
