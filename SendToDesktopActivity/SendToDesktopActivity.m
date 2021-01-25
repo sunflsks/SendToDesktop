@@ -59,4 +59,9 @@
     });
 }
 
+-(UIViewController*)activityViewController {
+    SendToDesktopViewController* controller = [[SendToDesktopViewController alloc] initWithArray:items];
+    return controller;
+}
+
 @end
