@@ -1,6 +1,6 @@
-#import "SendToDesktopActivity.h"
+#import "../SendToDesktopActivity/SendToDesktopActivity.h"
 #import <NMSSH/NMSSH.h>
-#import "../Utils.h"
+#import "../Utils/Utils.h"
 #import <libsunflsks/Network.h>
 #import "FileSender.h"
 

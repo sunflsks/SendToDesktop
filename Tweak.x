@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-#import "SendToDesktop/SendToDesktopActivity.h"
+#import "SendToDesktopActivity/SendToDesktopActivity.h"
 #include <MRYIPCCenter.h>
 #include <UICKeyChainStore/UICKeyChainStore.h>
 

@@ -1,6 +1,6 @@
 #include "SDPRootListController.h"
 #import <Preferences/PSSpecifier.h>
-#include "../Utils.h"
+#include "Utils.h"
 
 #define DEFAULTS @"us.sudhip.stdp"
 
