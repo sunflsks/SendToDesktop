@@ -20,6 +20,17 @@
     FileSender* sender;
 }
 
+-(void)setProgress:(NSUInteger)sent total:(NSUInteger)total {
+    NSUInteger percent = sent * 100 / total;
+    [self.bytesSentLabel setText:[NSString stringWithFormat:@"%lu/%lu", sent, total]];
+    [self.progressLabel setText:[NSString stringWithFormat:@"Sending file %lu percent", percent]];
+    [self.progressView setProgress:((float)sent / total)];
+}
+
+-(void)setFileCounter:(NSUInteger)number total:(NSUInteger)total {
+    [self.fileNameAndCounterLabel setText:[NSString stringWithFormat:@"File %lu of %lu", number, total]];
+}
+
 -(id)initWithArray:(NSArray*)sentArray {
     self = [super init];
     if (!self) return nil;
@@ -83,6 +94,7 @@
 -(void)initBytesSentLabel {
     self.bytesSentLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, self.progressView.center.y + 15, [UIScreen mainScreen].bounds.size.width - 20, 20)];
     NSLog(@"%f", self.progressView.center.y);
+    [self.bytesSentLabel setCenter:CGPointMake(self.view.center.x, self.progressView.center.y + 20)];
     [self.bytesSentLabel setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleCallout]];
     [self.bytesSentLabel setTextAlignment:NSTextAlignmentCenter];
     [self.view addSubview:self.bytesSentLabel];
@@ -95,6 +107,7 @@
 }
 
 -(void)viewWillDisappear:(BOOL)animated {
+    [sender disconnect];
     return [super viewWillDisappear:animated];
 }
 
