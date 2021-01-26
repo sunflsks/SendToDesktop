@@ -104,6 +104,32 @@
     // Safe area is not yet calculated in viewDidLoad
     [self.fileNameAndCounterLabel setCenter:CGPointMake(self.view.center.x, self.view.safeAreaInsets.top + 20)];
 
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+        for (id object in array) {
+            NSDictionary* data;
+            if ([object isKindOfClass:[NSURL class]]) {
+                data = [sender getDataFromURL:object];
+            }
+
+            else if ([object isKindOfClass:[UIImage class]]) {
+                data = [sender getDataFromImage:object];
+            }
+
+            BOOL (^sentBytesProgress)(NSUInteger) = ^BOOL(NSUInteger sent) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    NSUInteger totalSize = ((NSData*)data[@"data"]).length;
+                    [self setProgress:sent total:totalSize];
+                });
+                return YES;
+            };
+
+            [sender sendDataDict:data progress:sentBytesProgress];
+        }
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self dismissViewControllerAnimated:YES completion:nil];
+        });
+    });
 }
 
 -(void)viewWillDisappear:(BOOL)animated {
