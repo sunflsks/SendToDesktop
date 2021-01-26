@@ -57,30 +57,39 @@
     return self;
 }
 
--(BOOL)sendURL:(NSURL*)url {
+-(NSDictionary*)getDataFromURL:(NSURL*)url {
     NSData* data = [[NSData alloc] initWithContentsOfURL:url];
     NSString* filename = [url lastPathComponent];
-    return [self sendData:data filename:filename progress:nil];
+    return @{@"data":data, @"filename":filename};
+}
+
+-(NSDictionary*)getDataFromImage:(UIImage*)image {
+    NSData* data = UIImageJPEGRepresentation(image, 0);
+    NSString* filename = [NSString stringWithFormat:@"IMG-%d.jpg", imageCounter];
+    imageCounter++;
+    return @{@"data":data, @"filename":filename};
+}
+
+-(BOOL)sendDataDict:(NSDictionary*)data progress:(BOOL (^)(NSUInteger))progress {
+    return [self sendData:data[@"data"] filename:data[@"filename"] progress:progress];
+}
+
+-(BOOL)sendURL:(NSURL*)url {
+    return [self sendURL:url progress:nil];
 }
 
 -(BOOL)sendURL:(NSURL*)url progress:(BOOL (^)(NSUInteger))progress {
-    NSData* data = [[NSData alloc] initWithContentsOfURL:url];
-    NSString* filename = [url lastPathComponent];
-    return [self sendData:data filename:filename progress:progress];
+    NSDictionary* data = [self getDataFromURL:url];
+    return [self sendDataDict:data progress:progress];
 }
 
 -(BOOL)sendImage:(UIImage*)image {
-    NSData* data = UIImageJPEGRepresentation(image, 0);
-    NSString* filename = [NSString stringWithFormat:@"IMG-%d.jpg", imageCounter];
-    imageCounter++;
-    return [self sendData:data filename:filename progress:nil];
+    return [self sendImage:image progress:nil];
 }
 
 -(BOOL)sendImage:(UIImage*)image progress:(BOOL (^)(NSUInteger))progress {
-    NSData* data = UIImageJPEGRepresentation(image, 0);
-    NSString* filename = [NSString stringWithFormat:@"IMG-%d.jpg", imageCounter];
-    imageCounter++;
-    return [self sendData:data filename:filename progress:progress];
+    NSDictionary* data = [self getDataFromImage:image];
+    return [self sendDataDict:data progress:progress];
 }
 
 -(BOOL)sendData:(NSData*)data filename:(NSString*)filename progress:(BOOL (^)(NSUInteger))progress {
