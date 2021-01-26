@@ -7,6 +7,7 @@
 
 #import "SendToDesktopViewController.h"
 #import "../FileSender/FileSender.h"
+#import "../Utils/Utils.h"
 
 @interface SendToDesktopViewController ()
 @property(nonatomic)UIProgressView* progressView;
@@ -37,7 +38,6 @@
 
     array = sentArray;
     sender = [[FileSender alloc] init];
-    [sender connectWithErrorBlock:nil];
 
     if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
         self.view.backgroundColor = [UIColor systemGray5Color];
@@ -103,33 +103,47 @@
 
 -(void)viewDidAppear:(BOOL)animated {
     // Safe area is not yet calculated in viewDidLoad
+    __block BOOL cont = true;
     [self.fileNameAndCounterLabel setCenter:CGPointMake(self.view.center.x, self.view.safeAreaInsets.top + 20)];
+    [sender connectWithErrorBlock:^(NSString* message) {
+        cont = false;
+        spawn_on_main_thread(^{
+            [self spawnErrorAndQuit:message];
+        });
+    }];
 
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
-        for (id object in array) {
-            NSDictionary* data;
-            if ([object isKindOfClass:[NSURL class]]) {
-                data = [sender getDataFromURL:object];
+        if (cont) {
+            for (id object in array) {
+                NSDictionary* data;
+                if ([object isKindOfClass:[NSURL class]]) {
+                    data = [sender getDataFromURL:object];
+                }
+
+                else if ([object isKindOfClass:[UIImage class]]) {
+                    data = [sender getDataFromImage:object];
+                }
+
+                if (data == nil) {
+                    spawn_on_main_thread(^{
+                        [self spawnErrorAndQuit:@"Could not download/allocate data."];
+                    });
+                }
+                BOOL (^sentBytesProgress)(NSUInteger) = ^BOOL(NSUInteger sent) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        NSUInteger totalSize = ((NSData*)data[@"data"]).length;
+                        [self setProgress:sent total:totalSize];
+                    });
+                    return YES;
+                };
+
+                [sender sendDataDict:data progress:sentBytesProgress];
             }
 
-            else if ([object isKindOfClass:[UIImage class]]) {
-                data = [sender getDataFromImage:object];
-            }
-
-            BOOL (^sentBytesProgress)(NSUInteger) = ^BOOL(NSUInteger sent) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    NSUInteger totalSize = ((NSData*)data[@"data"]).length;
-                    [self setProgress:sent total:totalSize];
-                });
-                return YES;
-            };
-
-            [sender sendDataDict:data progress:sentBytesProgress];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self dismissViewControllerAnimated:YES completion:nil];
+            });
         }
-
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self dismissViewControllerAnimated:YES completion:nil];
-        });
     });
 }
 
