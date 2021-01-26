@@ -130,7 +130,7 @@
                     });
                 }
                 BOOL (^sentBytesProgress)(NSUInteger) = ^BOOL(NSUInteger sent) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
+                    spawn_on_main_thread(^{
                         NSUInteger totalSize = ((NSData*)data[@"data"]).length;
                         [self setProgress:sent total:totalSize];
                     });
@@ -140,7 +140,7 @@
                 [sender sendDataDict:data progress:sentBytesProgress];
             }
 
-            dispatch_async(dispatch_get_main_queue(), ^{
+            spawn_on_main_thread(^{
                 [self dismissViewControllerAnimated:YES completion:nil];
             });
         }
