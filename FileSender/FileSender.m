@@ -34,7 +34,7 @@
     return self;
 }
 
--(BOOL)connectWithErrorBlock:(void (NSString* error)) error {
+-(BOOL)connectWithErrorBlock:(void(^)(NSString* error)) error {
     if (![SunflsksNetwork checkIfConnected]) {
         TimeLog(@"Could not connect to network. Exiting");
         if (error != nil) error(@"Could not connect to network");
