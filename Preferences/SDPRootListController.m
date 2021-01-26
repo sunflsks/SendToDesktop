@@ -7,11 +7,11 @@
 @implementation SDPRootListController
 
 - (NSArray *)specifiers {
-	if (!_specifiers) {
-		_specifiers = [self loadSpecifiersFromPlistName:@"Root" target:self];
-	}
+    if (!_specifiers) {
+        _specifiers = [self loadSpecifiersFromPlistName:@"Root" target:self];
+    }
 
-	return _specifiers;
+    return _specifiers;
 }
 
 -(id)readPreferenceValue:(PSSpecifier*)specifier {
