@@ -65,6 +65,7 @@
 
 -(NSDictionary*)getDataFromURL:(NSURL*)url {
     NSData* data = [[NSData alloc] initWithContentsOfURL:url];
+    if (data == nil) return nil;
     NSString* filename = [url lastPathComponent];
     return @{@"data":data, @"filename":filename};
 }
@@ -77,7 +78,7 @@
 }
 
 -(BOOL)sendDataDict:(NSDictionary*)data progress:(BOOL (^)(NSUInteger))progress {
-    return [self sendData:data[@"data"] filename:data[@"filename"] progress:progress];
+    return [self sendData:data[@"data"] filename:data[@"filename"] ?: @"Unknown" progress:progress];
 }
 
 -(BOOL)sendURL:(NSURL*)url {
@@ -86,6 +87,7 @@
 
 -(BOOL)sendURL:(NSURL*)url progress:(BOOL (^)(NSUInteger))progress {
     NSDictionary* data = [self getDataFromURL:url];
+    if (data == nil) return NO;
     return [self sendDataDict:data progress:progress];
 }
 
