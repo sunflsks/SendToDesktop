@@ -45,6 +45,7 @@
 -(void)performActivity {
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
         FileSender* fileSender = [[FileSender alloc] init];
+        [fileSender connectWithErrorBlock:nil];
 
         for (id object in items) {
             if ([object isKindOfClass:[NSURL class]]) {

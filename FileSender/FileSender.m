@@ -31,30 +31,36 @@
 
     remoteDirectory = prefs[@"directory"];
 
+    return self;
+}
+
+-(BOOL)connectWithErrorBlock:(void (NSString* error)) error {
     if (![SunflsksNetwork checkIfConnected]) {
         TimeLog(@"Could not connect to network. Exiting");
-        return nil;
+        if (error != nil) error(@"Could not connect to network");
+        return NO;
     }
 
     session = [NMSSHSession connectToHost:hostName withUsername:userName];
     if (!session.isConnected) {
         TimeLog(@"Could not connect to remote. Exiting");
-        return nil;
+        if (error != nil) error(@"Could not connect to remote.");
+        return NO;
     }
 
     [session authenticateByPassword:password];
     if (!session.isAuthorized) {
         TimeLog(@"Invalid credentials. Exiting");
+        if (error != nil) error(@"Could not authenticate.");
         [session disconnect];
-        return nil;
+        return NO;
     }
 
     TimeLog(@"Connected to remote!");
 
     [session.sftp connect];
     [session.sftp createDirectoryAtPath:remoteDirectory];
-
-    return self;
+    return YES;
 }
 
 -(NSDictionary*)getDataFromURL:(NSURL*)url {

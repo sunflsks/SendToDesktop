@@ -37,6 +37,7 @@
 
     array = sentArray;
     sender = [[FileSender alloc] init];
+    [sender connectWithErrorBlock:nil];
 
     if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
         self.view.backgroundColor = [UIColor systemGray5Color];
