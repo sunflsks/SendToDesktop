@@ -65,6 +65,11 @@
     if (![[dictWithPreferences() objectForKey:@"enabledui"] boolValue]) return nil;
 
     SendToDesktopViewController* controller = [[SendToDesktopViewController alloc] initWithArray:items];
+
+    controller.doneBlock = ^{
+        [self activityDidFinish:YES];
+    };
+
     return controller;
 }
 
