@@ -6,7 +6,7 @@ include $(THEOS)/makefiles/common.mk
 
 TWEAK_NAME = SendToDesktop
 
-SendToDesktop_FILES = Tweak.x \
+SendToDesktop_FILES = Hooks.x \
 SendToDesktopActivity/SendToDesktopActivity.m \
 Utils/Utils.m \
 Lib/UICKeyChainStore/UICKeyChainStore.m  \
