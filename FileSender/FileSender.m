@@ -60,14 +60,27 @@
 -(BOOL)sendURL:(NSURL*)url {
     NSData* data = [[NSData alloc] initWithContentsOfURL:url];
     NSString* filename = [url lastPathComponent];
-    return [self sendData:data filename:filename];
+    return [self sendData:data filename:filename progress:nil];
+}
+
+-(BOOL)sendURL:(NSURL*)url progress:(BOOL (^)(NSUInteger))progress {
+    NSData* data = [[NSData alloc] initWithContentsOfURL:url];
+    NSString* filename = [url lastPathComponent];
+    return [self sendData:data filename:filename progress:progress];
 }
 
 -(BOOL)sendImage:(UIImage*)image {
     NSData* data = UIImageJPEGRepresentation(image, 0);
     NSString* filename = [NSString stringWithFormat:@"IMG-%d.jpg", imageCounter];
     imageCounter++;
-    return [self sendData:data filename:filename];
+    return [self sendData:data filename:filename progress:nil];
+}
+
+-(BOOL)sendImage:(UIImage*)image progress:(BOOL (^)(NSUInteger))progress {
+    NSData* data = UIImageJPEGRepresentation(image, 0);
+    NSString* filename = [NSString stringWithFormat:@"IMG-%d.jpg", imageCounter];
+    imageCounter++;
+    return [self sendData:data filename:filename progress:progress];
 }
 
 -(BOOL)sendData:(NSData*)data filename:(NSString*)filename progress:(BOOL (^)(NSUInteger))progress {
