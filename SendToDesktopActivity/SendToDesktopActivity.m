@@ -2,6 +2,7 @@
 #import "SendToDesktopActivity.h"
 #import "../FileSender/FileSender.h"
 #import "../SendToDesktopViewController/SendToDesktopViewController.h"
+#import "../Utils/Utils.h"
 
 @implementation SendToDesktopActivity {
     NSArray* items;
@@ -61,6 +62,8 @@
 }
 
 -(UIViewController*)activityViewController {
+    if (![[dictWithPreferences() objectForKey:@"enabledui"] boolValue]) return nil;
+
     SendToDesktopViewController* controller = [[SendToDesktopViewController alloc] initWithArray:items];
     return controller;
 }
