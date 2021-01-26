@@ -14,7 +14,7 @@ FileSender/FileSender.m \
 SendToDesktopViewController/SendToDesktopViewController.m \
 FileSender/FileSender.m
 
-SendToDesktop_CFLAGS = -fobjc-arc -I./Lib
+SendToDesktop_CFLAGS = -fobjc-arc -I./Lib -Wall -Werror
 SendToDesktop_LIBRARIES = NMSSH z sunflsks mryipc
 include $(THEOS_MAKE_PATH)/tweak.mk
 SUBPROJECTS += Preferences
