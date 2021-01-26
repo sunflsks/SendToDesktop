@@ -14,6 +14,7 @@
 @property(nonatomic)UILabel* progressLabel;
 @property(nonatomic)UILabel* fileNameAndCounterLabel;
 @property(nonatomic)UILabel* bytesSentLabel;
+-(void)initBlock;
 @end
 
 @implementation SendToDesktopViewController {
@@ -55,13 +56,24 @@
     [self initProgressLabel];
     [self initFileNameAndCounterLabel];
     [self initBytesSentLabel];
+    [self initBlock];
+}
+
+-(void)initBlock {
+    if (self.doneBlock == nil) {
+        __weak id wself = self;
+        self.doneBlock = ^{
+            id bself = wself;
+            [bself dismissViewControllerAnimated:YES completion:nil];
+        };
+    }
 }
 
 -(void)spawnErrorAndQuit:(NSString*)message {
     UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Uh oh!" message:message preferredStyle:UIAlertControllerStyleAlert];
 
     UIAlertAction* action = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction* action) {
-        [self dismissViewControllerAnimated:YES completion:nil];
+        self.doneBlock();
     }];
 
     [alert addAction:action];
@@ -140,9 +152,7 @@
                 [sender sendDataDict:data progress:sentBytesProgress];
             }
 
-            spawn_on_main_thread(^{
-                [self dismissViewControllerAnimated:YES completion:nil];
-            });
+            spawn_on_main_thread(self.doneBlock);
         }
     });
 }
