@@ -35,3 +35,8 @@ NSString* getPassword(void) {
     MRYIPCCenter* center = [MRYIPCCenter centerNamed:@"SendToDesktop/IPC"];
     return [center callExternalMethod:@selector(SDPasswordGetter:) withArguments:nil];
 }
+
+void playSentSound(void) {
+    MRYIPCCenter* center = [MRYIPCCenter centerNamed:@"SendToDesktop/IPC"];
+    [center callExternalMethod:@selector(playSentSound) withArguments:nil];
+}

@@ -3,6 +3,7 @@ NSString* stringWithTimestamp(NSString* input);
 void Log(NSString*);
 void setPassword(NSString* passwordToSet);
 NSString* getPassword(void);
+void playSentSound(void);
 
 static inline void TimeLog(NSString* x) {
     Log(stringWithTimestamp(x));

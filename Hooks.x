@@ -2,8 +2,11 @@
 #import "SendToDesktopActivity/SendToDesktopActivity.h"
 #include <MRYIPCCenter.h>
 #include <UICKeyChainStore/UICKeyChainStore.h>
+#import <AVFoundation/AVFoundation.h>
 
 #define LOG_DEST "/tmp/SendToDesktop.log"
+
+static AVAudioPlayer* sound = nil;
 
 %hook UIActivityViewController
 
@@ -25,6 +28,9 @@ static MRYIPCCenter* center;
     [center addTarget:self action:@selector(SDLogger:)];
     [center addTarget:self action:@selector(SDPasswordGetter:)];
     [center addTarget:self action:@selector(SDPasswordSetter:)];
+    [center addTarget:self action:@selector(playSentSound)];
+
+    sound = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:@"/System/Library/Audio/UISounds/navigation_pop.caf"] error:nil];
     %orig(arg1);
 }
 
@@ -46,5 +52,11 @@ static MRYIPCCenter* center;
 -(void)SDPasswordSetter:(NSString*)password {
     UICKeyChainStore* dict = [UICKeyChainStore keyChainStoreWithService:@"SendToDesktop/Keychain"];
     dict[@"password"] = password;
+}
+
+%new
+-(void)playSentSound {
+    if (sound == nil) return;
+    [sound play];
 }
 %end
