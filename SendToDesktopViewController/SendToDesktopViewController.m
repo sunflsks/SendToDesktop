@@ -150,9 +150,9 @@
                 };
 
                 [sender sendDataDict:data progress:sentBytesProgress];
+                playSentSound();
             }
 
-            playSentSound();
             spawn_on_main_thread(self.doneBlock);
         }
     });
