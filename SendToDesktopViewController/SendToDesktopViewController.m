@@ -14,6 +14,8 @@
 @property(nonatomic)UILabel* progressLabel;
 @property(nonatomic)UILabel* fileNameAndCounterLabel;
 @property(nonatomic)UILabel* bytesSentLabel;
+@property(nonatomic)UILabel* remoteInfoLabel;
+-(void)initRemoteInfoLabel;
 -(void)initBlock;
 @end
 
@@ -57,6 +59,7 @@
     [self initFileNameAndCounterLabel];
     [self initBytesSentLabel];
     [self initBlock];
+    [self initRemoteInfoLabel];
 }
 
 -(void)initBlock {
@@ -78,6 +81,13 @@
 
     [alert addAction:action];
     [self presentViewController:alert animated:YES completion:nil];
+}
+
+-(void)initRemoteInfoLabel {
+    self.remoteInfoLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 20)];
+    [self.remoteInfoLabel setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleCallout]];
+    [self.remoteInfoLabel setTextAlignment:NSTextAlignmentCenter];
+    [self.view addSubview:self.remoteInfoLabel];
 }
 
 -(void)initFileNameAndCounterLabel {
@@ -115,8 +125,13 @@
 
 -(void)viewDidAppear:(BOOL)animated {
     // Safe area is not yet calculated in viewDidLoad
+    NSDictionary* prefs = dictWithPreferences();
+    NSString* hostname = prefs[@"hostname"];
+    NSString* username = prefs[@"username"];
     __block BOOL cont = true;
     [self.fileNameAndCounterLabel setCenter:CGPointMake(self.view.center.x, self.view.safeAreaInsets.top + 20)];
+    [self.remoteInfoLabel setCenter:CGPointMake(self.view.center.x, self.view.safeAreaInsets.top + 100)];
+    [self.remoteInfoLabel setText:[NSString stringWithFormat:@"%@@%@", username, hostname]];
 
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
         [sender connectWithErrorBlock:^(NSString* message) {
