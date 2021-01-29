@@ -6,6 +6,7 @@
 
 @implementation SendToDesktopActivity {
     NSArray* items;
+    NSUInteger dataCount;
 }
 
 -(id)init {
@@ -14,6 +15,7 @@
         return nil;
     }
     items = nil;
+    dataCount = 0;
     return self;
 }
 
@@ -31,7 +33,7 @@
 
 -(BOOL)canPerformWithActivityItems:(NSArray*)activityItems {
     for (id item in activityItems) {
-        if ([item isKindOfClass:[UIImage class]] || [item isKindOfClass:[NSURL class]]) {
+        if ([item isKindOfClass:[UIImage class]] || [item isKindOfClass:[NSURL class]] || [item isKindOfClass:[NSData class]]) {
             return true;
         }
     }
@@ -55,6 +57,13 @@
 
             else if ([object isKindOfClass:[UIImage class]]) {
                 [fileSender sendImage:object];
+            }
+
+            else if ([object isKindOfClass:[NSData class]]) {
+                // For some strange, strange, reason, the actual filename (IMG_XXXX.JPG) is
+                // preserved in MobileSlideshow. This really makes me uncomfortable.
+                [fileSender sendData:object filename:[NSString stringWithFormat:@"Unknown-%lu", dataCount]];
+                dataCount++;
             }
         }
         [fileSender disconnect];
