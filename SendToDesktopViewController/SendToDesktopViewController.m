@@ -117,14 +117,15 @@
     // Safe area is not yet calculated in viewDidLoad
     __block BOOL cont = true;
     [self.fileNameAndCounterLabel setCenter:CGPointMake(self.view.center.x, self.view.safeAreaInsets.top + 20)];
-    [sender connectWithErrorBlock:^(NSString* message) {
-        cont = false;
-        spawn_on_main_thread(^{
-            [self spawnErrorAndQuit:message];
-        });
-    }];
 
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+        [sender connectWithErrorBlock:^(NSString* message) {
+            cont = false;
+            spawn_on_main_thread(^{
+                [self spawnErrorAndQuit:message];
+            });
+        }];
+
         if (cont) {
             for (id object in array) {
                 NSDictionary* data;
