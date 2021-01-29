@@ -129,7 +129,7 @@
     NSString* hostname = prefs[@"hostname"];
     NSString* username = prefs[@"username"];
     __block BOOL cont = true;
-    [self.fileNameAndCounterLabel setCenter:CGPointMake(self.view.center.x, self.view.safeAreaInsets.top + 20)];
+    [self.fileNameAndCounterLabel setCenter:CGPointMake(self.view.center.x, self.view.safeAreaInsets.top + 40)];
     [self.remoteInfoLabel setCenter:CGPointMake(self.view.center.x, self.view.safeAreaInsets.top + 100)];
     [self.remoteInfoLabel setText:[NSString stringWithFormat:@"%@@%@", username, hostname]];
 
@@ -142,7 +142,12 @@
         }];
 
         if (cont) {
+            int counter = 0;
             for (id object in array) {
+                counter++;
+                spawn_on_main_thread(^{
+                    [self setFileCounter:counter total:[array count]];
+                });
                 NSDictionary* data;
                 if ([object isKindOfClass:[NSURL class]]) {
                     data = [sender getDataFromURL:object];
