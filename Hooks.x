@@ -17,6 +17,15 @@ static AVAudioPlayer* sound = nil;
     return %orig(objects, arr);
 }
 
+
+// Some apps (notably MobileSlideShow) use this method instead, so hook it as well.
+-(id)initWithAssetIdentifiers:(id)arg1 activityItems:(id)arg2 applicationActivities:(NSArray*)arg3 {
+    SendToDesktopActivity* activity = [[SendToDesktopActivity alloc] init];
+    NSMutableArray* arr = [[NSMutableArray alloc] initWithArray:arg3];
+    [arr addObject:activity];
+    return %orig(arg1, arg2, arr);
+}
+
 %end
 
 static MRYIPCCenter* center;
