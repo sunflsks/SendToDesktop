@@ -18,6 +18,7 @@
 -(void)initRemoteInfoLabel;
 -(void)initBlock;
 -(void)cleanUpAndDisconnect;
+-(void)initializeTwo;
 @end
 
 @implementation SendToDesktopViewController {
@@ -131,16 +132,20 @@
     [self.view addSubview:self.bytesSentLabel];
 }
 
--(void)viewDidAppear:(BOOL)animated {
+-(void)initializeTwo {
     // Safe area is not yet calculated in viewDidLoad
     NSDictionary* prefs = dictWithPreferences();
     NSString* hostname = prefs[@"hostname"];
     NSString* username = prefs[@"username"];
-    __block BOOL cont = true;
     [self.fileNameAndCounterLabel setCenter:CGPointMake(self.view.center.x, self.view.safeAreaInsets.top + 40)];
     [self.remoteInfoLabel setCenter:CGPointMake(self.view.center.x, self.view.safeAreaInsets.top + 100)];
     [self.remoteInfoLabel setText:[NSString stringWithFormat:@"%@@%@", username, hostname]];
     [self.progressLabel setText:@"Connecting..."];
+}
+
+-(void)viewDidAppear:(BOOL)animated {
+    [self initializeTwo];
+    __block BOOL cont = true;
 
     spawn_on_background_thread(^{
         [sender connectWithErrorBlock:^(NSString* message) {
