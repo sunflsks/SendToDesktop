@@ -145,57 +145,53 @@
 
 -(void)viewDidAppear:(BOOL)animated {
     [self initializeTwo];
-    __block BOOL cont = true;
 
     spawn_on_background_thread(^{
         [sender connectWithErrorBlock:^(NSString* message) {
-            cont = false;
             spawn_on_main_thread(^{
                 [self spawnErrorAndQuit:message];
             });
         }];
 
-        if (cont) {
-            int counter = 0;
-            for (id object in array) {
-                counter++;
-                spawn_on_main_thread(^{
-                    [self setFileCounter:counter total:[array count]];
-                });
-                NSDictionary* data;
-                if ([object isKindOfClass:[NSURL class]]) {
-                    data = [sender getDataFromURL:object];
-                }
-
-                else if ([object isKindOfClass:[UIImage class]]) {
-                    data = [sender getDataFromImage:object];
-                }
-
-                if (data == nil) {
-                    spawn_on_main_thread(^{
-                        [self spawnErrorAndQuit:@"Could not download/allocate data."];
-                    });
-                }
-                BOOL (^sentBytesProgress)(NSUInteger) = ^BOOL(NSUInteger sent) {
-                    if (abortTransfer) {
-                        return NO;
-                    }
-                    spawn_on_main_thread(^{
-                        NSUInteger totalSize = ((NSData*)data[@"data"]).length;
-                        [self setProgress:sent total:totalSize];
-                    });
-                    return YES;
-                };
-
-                [sender sendDataDict:data progress:sentBytesProgress];
-                playSentSound();
+        int counter = 0;
+        for (id object in array) {
+            counter++;
+            spawn_on_main_thread(^{
+                [self setFileCounter:counter total:[array count]];
+            });
+            NSDictionary* data;
+            if ([object isKindOfClass:[NSURL class]]) {
+                data = [sender getDataFromURL:object];
             }
 
-            [sender disconnect];
-            spawn_on_main_thread(^{
-                self.doneBlock();
-            });
+            else if ([object isKindOfClass:[UIImage class]]) {
+                data = [sender getDataFromImage:object];
+            }
+
+            if (data == nil) {
+                spawn_on_main_thread(^{
+                    [self spawnErrorAndQuit:@"Could not download/allocate data."];
+                });
+            }
+            BOOL (^sentBytesProgress)(NSUInteger) = ^BOOL(NSUInteger sent) {
+                if (abortTransfer) {
+                    return NO;
+                }
+                spawn_on_main_thread(^{
+                    NSUInteger totalSize = ((NSData*)data[@"data"]).length;
+                    [self setProgress:sent total:totalSize];
+                });
+                return YES;
+            };
+
+            [sender sendDataDict:data progress:sentBytesProgress];
+            playSentSound();
         }
+
+        [sender disconnect];
+        spawn_on_main_thread(^{
+            self.doneBlock();
+        });
     });
 }
 
