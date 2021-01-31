@@ -76,7 +76,7 @@
     SendToDesktopViewController* controller = [[SendToDesktopViewController alloc] initWithArray:items];
 
     controller.doneBlock = ^{
-        [self activityDidFinish:YES];
+        spawn_on_main_thread(^{[self activityDidFinish:YES];});
     };
 
     return controller;
