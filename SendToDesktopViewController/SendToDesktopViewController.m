@@ -175,6 +175,7 @@
                 playSentSound();
             }
 
+            [sender disconnect];
             spawn_on_main_thread(self.doneBlock);
         }
     });
