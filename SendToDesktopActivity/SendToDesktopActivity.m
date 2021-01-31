@@ -46,7 +46,7 @@
 }
 
 -(void)performActivity {
-    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+    spawn_on_background_thread(^{
         FileSender* fileSender = [[FileSender alloc] init];
         [fileSender connectWithErrorBlock:nil];
 

@@ -134,7 +134,7 @@
     [self.remoteInfoLabel setText:[NSString stringWithFormat:@"%@@%@", username, hostname]];
     [self.progressLabel setText:@"Connecting..."];
 
-    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+    spawn_on_background_thread(^{
         [sender connectWithErrorBlock:^(NSString* message) {
             cont = false;
             spawn_on_main_thread(^{
