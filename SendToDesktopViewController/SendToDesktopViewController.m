@@ -17,11 +17,13 @@
 @property(nonatomic)UILabel* remoteInfoLabel;
 -(void)initRemoteInfoLabel;
 -(void)initBlock;
+-(void)cleanUpAndDisconnect;
 @end
 
 @implementation SendToDesktopViewController {
     NSArray* array;
     FileSender* sender;
+    BOOL abortTransfer;
 }
 
 -(void)setProgress:(NSUInteger)sent total:(NSUInteger)total {
@@ -49,6 +51,7 @@
         self.view.backgroundColor = [UIColor whiteColor];
     }
 
+    abortTransfer = NO;
     return self;
 }
 
@@ -60,6 +63,10 @@
     [self initBytesSentLabel];
     [self initBlock];
     [self initRemoteInfoLabel];
+}
+
+-(void)cleanUpAndDisconnect {
+    abortTransfer = YES;
 }
 
 -(void)initBlock {
@@ -76,6 +83,7 @@
     UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Uh oh!" message:message preferredStyle:UIAlertControllerStyleAlert];
 
     UIAlertAction* action = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction* action) {
+        [self cleanUpAndDisconnect];
         self.doneBlock();
     }];
 
@@ -164,6 +172,9 @@
                     });
                 }
                 BOOL (^sentBytesProgress)(NSUInteger) = ^BOOL(NSUInteger sent) {
+                    if (abortTransfer) {
+                        return NO;
+                    }
                     spawn_on_main_thread(^{
                         NSUInteger totalSize = ((NSData*)data[@"data"]).length;
                         [self setProgress:sent total:totalSize];
@@ -176,13 +187,16 @@
             }
 
             [sender disconnect];
-            spawn_on_main_thread(self.doneBlock);
+            spawn_on_main_thread(^{
+                [self cleanUpAndDisconnect];
+                self.doneBlock();
+            });
         }
     });
 }
 
 -(void)viewWillDisappear:(BOOL)animated {
-    [sender disconnect];
+    [self cleanUpAndDisconnect];
     return [super viewWillDisappear:animated];
 }
 
