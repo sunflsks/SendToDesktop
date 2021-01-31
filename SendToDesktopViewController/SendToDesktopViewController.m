@@ -188,7 +188,6 @@
 
             [sender disconnect];
             spawn_on_main_thread(^{
-                [self cleanUpAndDisconnect];
                 self.doneBlock();
             });
         }
