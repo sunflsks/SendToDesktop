@@ -15,6 +15,7 @@
 @property(nonatomic)UILabel* fileNameAndCounterLabel;
 @property(nonatomic)UILabel* bytesSentLabel;
 @property(nonatomic)UILabel* remoteInfoLabel;
+@property(nonatomic)UIButton* cancelButton;
 -(void)initRemoteInfoLabel;
 -(void)initBlock;
 -(void)cleanUpAndDisconnect;
@@ -64,6 +65,7 @@
     [self initBytesSentLabel];
     [self initBlock];
     [self initRemoteInfoLabel];
+    [self initCancelButton];
 }
 
 -(void)cleanUpAndDisconnect {
@@ -134,6 +136,29 @@
     [self.view addSubview:self.bytesSentLabel];
 }
 
+-(void)initCancelButton {
+    UIFont* cancelTextFont = [UIFont systemFontOfSize:18];
+    NSString* cancelText = @"Cancel";
+    CGSize cancelTextSize = [cancelText sizeWithAttributes:@{NSFontAttributeName:cancelTextFont}];
+    self.cancelButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    [self.cancelButton setTitle:cancelText forState:UIControlStateNormal];
+    [self.cancelButton addTarget:self action:@selector(touchedCancelButton) forControlEvents:UIControlEventTouchUpInside];
+    [self.cancelButton setFrame:CGRectMake(0, 0, cancelTextSize.width, cancelTextSize.height)];
+    [self.cancelButton.titleLabel setFont:cancelTextFont];
+    [self.view addSubview:self.cancelButton];
+}
+
+-(void)touchedCancelButton {
+    dismissControllerInAnotherMethod = YES;
+    [self cleanUpAndDisconnect];
+    self.doneBlock();
+}
+
+-(void)viewSafeAreaInsetsDidChange {
+    [super viewSafeAreaInsetsDidChange];
+    [self initializeTwo];
+}
+
 -(void)initializeTwo {
     // Safe area is not yet calculated in viewDidLoad
     NSDictionary* prefs = dictWithPreferences();
@@ -142,12 +167,11 @@
     [self.fileNameAndCounterLabel setCenter:CGPointMake(self.view.center.x, self.view.safeAreaInsets.top + 40)];
     [self.remoteInfoLabel setCenter:CGPointMake(self.view.center.x, self.view.safeAreaInsets.top + 100)];
     [self.remoteInfoLabel setText:[NSString stringWithFormat:@"%@@%@", username, hostname]];
+    [self.cancelButton setCenter:CGPointMake([UIScreen mainScreen].bounds.size.width - 10 - self.cancelButton.frame.size.width, self.view.safeAreaInsets.top + 10 + self.cancelButton.frame.size.height)];
     [self.progressLabel setText:@"Connecting..."];
 }
 
 -(void)viewDidAppear:(BOOL)animated {
-    [self initializeTwo];
-
     spawn_on_background_thread(^{
         [sender connectWithErrorBlock:^(NSString* message) {
             spawn_on_main_thread(^{
