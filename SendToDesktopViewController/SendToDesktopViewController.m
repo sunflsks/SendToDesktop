@@ -182,41 +182,43 @@
             });
         }];
 
-        int counter = 0;
-        for (id object in array) {
-            counter++;
-            spawn_on_main_thread(^{
-                [self setFileCounter:counter total:[array count]];
-            });
-            NSDictionary* data;
-            if ([object isKindOfClass:[NSURL class]]) {
-                data = [sender getDataFromURL:object];
-            }
-
-            else if ([object isKindOfClass:[UIImage class]]) {
-                data = [sender getDataFromImage:object];
-            }
-
-            if (data == nil) {
+        if (!abortTransfer) {
+            int counter = 0;
+            for (id object in array) {
+                counter++;
                 spawn_on_main_thread(^{
-                    [self spawnErrorAndQuit:@"Could not download/allocate data."];
+                    [self setFileCounter:counter total:[array count]];
                 });
-            }
-            BOOL (^sentBytesProgress)(NSUInteger) = ^BOOL(NSUInteger sent) {
-                if (abortTransfer) {
-                    return NO;
+                NSDictionary* data;
+                if ([object isKindOfClass:[NSURL class]]) {
+                    data = [sender getDataFromURL:object];
                 }
-                spawn_on_main_thread(^{
-                    NSUInteger totalSize = ((NSData*)data[@"data"]).length;
-                    [self setProgress:sent total:totalSize];
-                });
-                return YES;
-            };
 
-            [sender sendDataDict:data progress:sentBytesProgress];
-            playSentSound();
+                else if ([object isKindOfClass:[UIImage class]]) {
+                    data = [sender getDataFromImage:object];
+                }
+
+                if (data == nil) {
+                    dismissControllerInAnotherMethod = YES;
+                    spawn_on_main_thread(^{
+                        [self spawnErrorAndQuit:@"Could not download/allocate data."];
+                    });
+                }
+                BOOL (^sentBytesProgress)(NSUInteger) = ^BOOL(NSUInteger sent) {
+                    if (abortTransfer) {
+                        return NO;
+                    }
+                    spawn_on_main_thread(^{
+                        NSUInteger totalSize = ((NSData*)data[@"data"]).length;
+                        [self setProgress:sent total:totalSize];
+                    });
+                    return YES;
+                };
+
+                [sender sendDataDict:data progress:sentBytesProgress];
+                playSentSound();
+            }
         }
-
         [sender disconnect];
         if (!dismissControllerInAnotherMethod) {
             spawn_on_main_thread(^{
