@@ -35,6 +35,11 @@
 }
 
 -(BOOL)connectWithErrorBlock:(void(^)(NSString* error)) error {
+    if (!hostName || !userName || !password) {
+        if (error != nil) error(@"Required preferences are blank.");
+        return NO;
+    }
+
     if (![SunflsksNetwork checkIfConnected]) {
         TimeLog(@"Could not connect to network. Exiting");
         if (error != nil) error(@"Could not connect to network");
