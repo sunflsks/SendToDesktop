@@ -228,13 +228,11 @@
     });
 }
 
-// Due to my very not-ideal way of avoiding multithreaded race conditions, the UIActivityVC will
-// still be dismissed. This is because the main file transferring block (above) still goes on
-// even after the SendToDesktop VC is dismissed, and in that block it eventually dismisses
-// the UIActivityVC in the end.
 -(void)viewWillDisappear:(BOOL)animated {
+    dismissControllerInAnotherMethod = YES;
     [self cleanUpAndDisconnect];
-    return [super viewWillDisappear:animated];
+    [super viewWillDisappear:animated];
+    self.doneBlock();
 }
 
 @end
