@@ -169,7 +169,7 @@
     [self.fileNameAndCounterLabel setCenter:CGPointMake(self.view.center.x, self.view.safeAreaInsets.top + 40)];
     [self.remoteInfoLabel setCenter:CGPointMake(self.view.center.x, self.view.safeAreaInsets.top + 100)];
     [self.remoteInfoLabel setText:[NSString stringWithFormat:@"%@@%@", username, hostname]];
-    [self.cancelButton setCenter:CGPointMake([UIScreen mainScreen].bounds.size.width - 10 - self.cancelButton.frame.size.width, self.view.safeAreaInsets.top + 10 + self.cancelButton.frame.size.height)];
+    [self.cancelButton setCenter:CGPointMake([UIScreen mainScreen].bounds.size.width - self.cancelButton.frame.size.width, self.view.safeAreaInsets.top + 5 + self.cancelButton.frame.size.height)];
     [self.progressLabel setText:@"Connecting..."];
 }
 
