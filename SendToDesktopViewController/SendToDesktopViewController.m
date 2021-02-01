@@ -81,15 +81,17 @@
 }
 
 -(void)spawnErrorAndQuit:(NSString*)message {
-    UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Uh oh!" message:message preferredStyle:UIAlertControllerStyleAlert];
+    if ([self isViewLoaded] && self.view.window) {
+        UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Uh oh!" message:message preferredStyle:UIAlertControllerStyleAlert];
 
-    UIAlertAction* action = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction* action) {
-        [self cleanUpAndDisconnect];
-        self.doneBlock();
-    }];
+        UIAlertAction* action = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction* action) {
+            [self cleanUpAndDisconnect];
+            self.doneBlock();
+        }];
 
-    [alert addAction:action];
-    [self presentViewController:alert animated:YES completion:nil];
+        [alert addAction:action];
+        [self presentViewController:alert animated:YES completion:nil];
+    }
 }
 
 -(void)initRemoteInfoLabel {
