@@ -26,6 +26,7 @@
     NSArray* array;
     FileSender* sender;
     BOOL abortTransfer;
+    __block BOOL dismissControllerInAnotherMethod;
 }
 
 -(void)setProgress:(NSUInteger)sent total:(NSUInteger)total {
@@ -54,6 +55,7 @@
     }
 
     abortTransfer = NO;
+    dismissControllerInAnotherMethod = NO;
     return self;
 }
 
@@ -175,6 +177,7 @@
     spawn_on_background_thread(^{
         [sender connectWithErrorBlock:^(NSString* message) {
             spawn_on_main_thread(^{
+                dismissControllerInAnotherMethod = YES;
                 [self spawnErrorAndQuit:message];
             });
         }];
@@ -215,9 +218,11 @@
         }
 
         [sender disconnect];
-        spawn_on_main_thread(^{
-            self.doneBlock();
-        });
+        if (!dismissControllerInAnotherMethod) {
+            spawn_on_main_thread(^{
+                self.doneBlock();
+            });
+        }
     });
 }
 
