@@ -10,9 +10,8 @@
 @end
 
 @interface FileSender ()
--(unsigned long)createRemoteDirectory;
 -(int)getSFTPErrorCode;
--(void)executeBlockWithSFTPErrorMessage:(void(^)(NSString* error))error;
+-(void)executeBlockWithSFTPErrorMessage;
 @end
 
 @implementation FileSender {
@@ -23,7 +22,7 @@
 
     NSString* remoteDirectory;
     NMSSHSession* session;
-
+    void(^error)(NSString* error);
     int imageCounter;
 }
 
@@ -45,7 +44,9 @@
     return self;
 }
 
--(BOOL)connectWithErrorBlock:(void(^)(NSString* error)) error {
+-(BOOL)connectWithErrorBlock:(void(^)(NSString* error)) errorBlock {
+    error = errorBlock;
+
     if (!hostName || !userName || !password) {
         if (error != nil) error(@"Required preferences are blank.");
         return NO;
@@ -78,20 +79,8 @@
 
     // Do this for the errno values, so there is a more descriptive error than "Uh oh!"
     if (![session.sftp directoryExistsAtPath:remoteDirectory]) {
-        unsigned long rc = [self createRemoteDirectory];
-
-        // libssh2_sftp_mkdir returns a nonzero value on failure, but this is the only one that
-        // really matters, the rest are internal malloc failures and stuff that do matter, but
-        // not enough for their own error message
-        if (rc) {
-            if (rc == LIBSSH2_ERROR_SFTP_PROTOCOL) {
-                [self executeBlockWithSFTPErrorMessage:error];
-            }
-
-            else {
-                if (error) error(@"Unknown error");
-            }
-
+        if (![session.sftp createDirectoryAtPath:remoteDirectory]) {
+            [self executeBlockWithSFTPErrorMessage];
             return NO;
         }
     }
@@ -143,6 +132,7 @@
 
     if (![session.sftp writeContents:data toFileAtPath:remoteFileName progress:progress]) {
         TimeLog(@"Couldn't write contents to remote.");
+        [self executeBlockWithSFTPErrorMessage];
         return NO;
     }
 
@@ -156,15 +146,6 @@
     return [self sendData:data filename:filename progress:nil];
 }
 
--(unsigned long)createRemoteDirectory {
-    if (!session) return -1;
-    return libssh2_sftp_mkdir(session.sftp.sftpSession, [remoteDirectory UTF8String], LIBSSH2_SFTP_S_IRWXU | LIBSSH2_SFTP_S_IRGRP|LIBSSH2_SFTP_S_IXGRP | LIBSSH2_SFTP_S_IROTH|LIBSSH2_SFTP_S_IXOTH);
-}
-
--(BOOL)checkIfFileCanBeWritten:(NSString*)filename {
-    return libssh2_sftp_open(session.sftp.sftpSession, [filename UTF8String], LIBSSH2_FXF_WRITE|LIBSSH2_FXF_CREAT|LIBSSH2_FXF_TRUNC, LIBSSH2_SFTP_S_IRUSR|LIBSSH2_SFTP_S_IWUSR|LIBSSH2_SFTP_S_IRGRP|LIBSSH2_SFTP_S_IROTH) != NULL;
-}
-
 -(int)getSFTPErrorCode {
     if (!session) return 1;
     return libssh2_sftp_last_error(session.sftp.sftpSession);
@@ -176,7 +157,7 @@
     TimeLog(@"Disconnected from remote");
 }
 
--(void)executeBlockWithSFTPErrorMessage:(void(^)(NSString* error))error {
+-(void)executeBlockWithSFTPErrorMessage {
     NSMutableString* errorString = [[NSMutableString alloc] initWithString:[NSString stringWithFormat:@"Could not create directory %@: ", remoteDirectory]];
     int err = [self getSFTPErrorCode];
 
