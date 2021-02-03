@@ -162,7 +162,7 @@
 }
 
 -(BOOL)checkIfFileCanBeWritten:(NSString*)filename {
-    return libssh2_sftp_open(session.sftpSession, [filename UTF8String], LIBSSH2_FXF_WRITE|LIBSSH2_FXF_CREAT|LIBSSH2_FXF_TRUNC, LIBSSH2_SFTP_S_IRUSR|LIBSSH2_SFTP_S_IWUSR|LIBSSH2_SFTP_S_IRGRP|LIBSSH2_SFTP_S_IROTH;) != NULL;
+    return libssh2_sftp_open(session.sftp.sftpSession, [filename UTF8String], LIBSSH2_FXF_WRITE|LIBSSH2_FXF_CREAT|LIBSSH2_FXF_TRUNC, LIBSSH2_SFTP_S_IRUSR|LIBSSH2_SFTP_S_IWUSR|LIBSSH2_SFTP_S_IRGRP|LIBSSH2_SFTP_S_IROTH) != NULL;
 }
 
 -(int)getSFTPErrorCode {
