@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
 #include <MRYIPCCenter.h>
 #define DEFAULTS @"us.sudhip.stdp"
+#include <libssh2_sftp.h>
 
 NSDictionary* dictWithPreferences(void) {
     NSString* prefsLocation = [NSString stringWithFormat:

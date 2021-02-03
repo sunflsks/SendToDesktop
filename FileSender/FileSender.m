@@ -4,6 +4,17 @@
 #import <libsunflsks/Network.h>
 #import "FileSender.h"
 
+// Not ideal
+@interface NMSFTP ()
+@property (nonatomic, assign) LIBSSH2_SFTP *sftpSession;
+@end
+
+@interface FileSender ()
+-(unsigned long)createRemoteDirectory;
+-(int)getSFTPErrorCode;
+-(void)executeBlockWithSFTPErrorMessage:(void(^)(NSString* error))error;
+@end
+
 @implementation FileSender {
     NSString* hostName;
 
@@ -64,7 +75,27 @@
     TimeLog(@"Connected to remote!");
 
     [session.sftp connect];
-    [session.sftp createDirectoryAtPath:remoteDirectory];
+
+    // Do this for the errno values, so there is a more descriptive error than "Uh oh!"
+    if (![session.sftp directoryExistsAtPath:remoteDirectory]) {
+        unsigned long rc = [self createRemoteDirectory];
+
+        // libssh2_sftp_mkdir returns a nonzero value on failure, but this is the only one that
+        // really matters, the rest are internal malloc failures and stuff that do matter, but
+        // not enough for their own error message
+        if (rc) {
+            if (rc == LIBSSH2_ERROR_SFTP_PROTOCOL) {
+                [self executeBlockWithSFTPErrorMessage:error];
+            }
+
+            else {
+                if (error) error(@"Unknown error");
+            }
+
+            return NO;
+        }
+    }
+
     return YES;
 }
 
@@ -125,10 +156,57 @@
     return [self sendData:data filename:filename progress:nil];
 }
 
+-(unsigned long)createRemoteDirectory {
+    if (!session) return -1;
+    return libssh2_sftp_mkdir(session.sftp.sftpSession, [remoteDirectory UTF8String], LIBSSH2_SFTP_S_IRWXU | LIBSSH2_SFTP_S_IRGRP|LIBSSH2_SFTP_S_IXGRP | LIBSSH2_SFTP_S_IROTH|LIBSSH2_SFTP_S_IXOTH);
+}
+
+-(BOOL)checkIfFileCanBeWritten:(NSString*)filename {
+    return libssh2_sftp_open(session.sftpSession, [filename UTF8String], LIBSSH2_FXF_WRITE|LIBSSH2_FXF_CREAT|LIBSSH2_FXF_TRUNC, LIBSSH2_SFTP_S_IRUSR|LIBSSH2_SFTP_S_IWUSR|LIBSSH2_SFTP_S_IRGRP|LIBSSH2_SFTP_S_IROTH;) != NULL;
+}
+
+-(int)getSFTPErrorCode {
+    if (!session) return 1;
+    return libssh2_sftp_last_error(session.sftp.sftpSession);
+}
+
 -(void)disconnect {
     [session.sftp disconnect];
     [session disconnect];
     TimeLog(@"Disconnected from remote");
+}
+
+-(void)executeBlockWithSFTPErrorMessage:(void(^)(NSString* error))error {
+    NSMutableString* errorString = [[NSMutableString alloc] initWithString:[NSString stringWithFormat:@"Could not create directory %@: ", remoteDirectory]];
+    int err = [self getSFTPErrorCode];
+
+    switch (err) {
+        case LIBSSH2_FX_NO_SUCH_FILE:
+        case LIBSSH2_FX_NO_SUCH_PATH:
+            [errorString appendString:@"Parent folder does not exist"];
+            break;
+
+        case LIBSSH2_FX_PERMISSION_DENIED:
+            [errorString appendString:@"Permission denied"];
+            break;
+
+        case LIBSSH2_FX_FAILURE:
+            [errorString appendString:@"General failure"];
+            break;
+
+        case LIBSSH2_FX_NOT_A_DIRECTORY:
+            [errorString appendString:@"Not a folder"];
+            break;
+
+        case LIBSSH2_FX_INVALID_FILENAME:
+            [errorString appendString:@"Invalid name for folder"];
+            break;
+
+        default:
+            [errorString appendString:@"Unknown error"];
+    }
+
+    if (error != nil) error(errorString);
 }
 
 @end
