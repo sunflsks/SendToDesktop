@@ -1,3 +1,5 @@
+#import <UIKit/UIKit.h>
+
 @interface SendToDesktopActivity : UIActivity
 -(NSString*)activityType;
 -(NSString*)activityTitle;

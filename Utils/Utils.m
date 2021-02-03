@@ -1,5 +1,6 @@
-#define DEFAULTS @"us.sudhip.stdp"
+#import <Foundation/Foundation.h>
 #include <MRYIPCCenter.h>
+#define DEFAULTS @"us.sudhip.stdp"
 
 NSDictionary* dictWithPreferences(void) {
     NSString* prefsLocation = [NSString stringWithFormat:
