@@ -1,8 +1,9 @@
+BasedOnStyle: Mozilla
 Language: ObjC
 ColumnLimit: 100
 IndentWidth: 4
 ObjCBlockIndentWidth: 4
-SpaceBeforeParens: Never
+SpaceBeforeParens: ControlStatements
 UseTab: Never
 AllowShortCaseLabelsOnASingleLine: true
 IndentCaseLabels: true
@@ -13,3 +14,6 @@ ObjCSpaceBeforeProtocolList: true
 PointerAlignment: Left
 ReflowComments: true
 SortIncludes: true
+ObjCSpaceAfterProperty: true
+ObjCBreakBeforeNestedBlockParam: true
+SpaceBeforeSquareBrackets: false
