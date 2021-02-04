@@ -6,7 +6,7 @@
 //  Copyright (c) 2011 Kishikawa Katsumi. All rights reserved.
 //
 
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+// #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 #pragma message "Deprecated behavior inside!"
 #import "UICKeyChainStore.h"
 
@@ -1546,6 +1546,8 @@ static NSString* _defaultService;
     }
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 - (CFTypeRef)accessibilityObject {
     switch(_accessibility) {
         case UICKeyChainStoreAccessibilityWhenUnlocked: return kSecAttrAccessibleWhenUnlocked;
@@ -1563,6 +1565,7 @@ static NSString* _defaultService;
         default: return nil;
     }
 }
+#pragma clang diagnostic pop
 
 + (NSError*)argumentError:(NSString*)message {
     NSError* error = [NSError errorWithDomain:UICKeyChainStoreErrorDomain
