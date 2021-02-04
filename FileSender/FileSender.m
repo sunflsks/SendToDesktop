@@ -11,7 +11,7 @@
 
 @interface FileSender ()
 -(int)getSFTPErrorCode;
--(void)executeBlockWithSFTPErrorMessage;
+-(void)couldntCreateFileOnRemote:(BOOL)isFile;
 @end
 
 @implementation FileSender {
@@ -80,7 +80,7 @@
     // Do this for the errno values, so there is a more descriptive error than "Uh oh!"
     if (![session.sftp directoryExistsAtPath:remoteDirectory]) {
         if (![session.sftp createDirectoryAtPath:remoteDirectory]) {
-            [self executeBlockWithSFTPErrorMessage];
+            [self couldntCreateFileOnRemote:NO];
             return NO;
         }
     }
@@ -132,7 +132,7 @@
 
     if (![session.sftp writeContents:data toFileAtPath:remoteFileName progress:progress]) {
         TimeLog(@"Couldn't write contents to remote.");
-        [self executeBlockWithSFTPErrorMessage];
+        [self couldntCreateFileOnRemote:YES];
         return NO;
     }
 
@@ -157,8 +157,9 @@
     TimeLog(@"Disconnected from remote");
 }
 
--(void)executeBlockWithSFTPErrorMessage {
-    NSMutableString* errorString = [[NSMutableString alloc] initWithString:[NSString stringWithFormat:@"Could not create directory %@: ", remoteDirectory]];
+// isFile is for choosing whether a file or a directory could not be created for a better error message
+-(void)couldntCreateFileOnRemote:(BOOL)isFile {
+    NSMutableString* errorString = [[NSMutableString alloc] initWithString:[NSString stringWithFormat:@"Could not create %@ %@: ", isFile ? @"file" : @"directory", remoteDirectory]];
     int err = [self getSFTPErrorCode];
 
     switch (err) {
