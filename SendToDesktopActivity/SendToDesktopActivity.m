@@ -1,17 +1,17 @@
-#import <UIKit/UIKit.h>
 #import "SendToDesktopActivity.h"
 #import "../FileSender/FileSender.h"
 #import "../SendToDesktopViewController/SendToDesktopViewController.h"
 #import "../Utils/Utils.h"
+#import <UIKit/UIKit.h>
 
 @implementation SendToDesktopActivity {
     NSArray* items;
     NSUInteger dataCount;
 }
 
--(id)init {
+- (id)init {
     self = [super init];
-    if (!self) {
+    if(!self) {
         return nil;
     }
     items = nil;
@@ -19,21 +19,22 @@
     return self;
 }
 
--(NSString*)activityType {
+- (NSString*)activityType {
     return @"SendToDesktop";
 }
 
--(NSString*)activityTitle {
+- (NSString*)activityTitle {
     return @"Send to Computer";
 }
 
--(UIImage*)activityImage {
+- (UIImage*)activityImage {
     return [UIImage systemImageNamed:@"desktopcomputer"];
 }
 
--(BOOL)canPerformWithActivityItems:(NSArray*)activityItems {
-    for (id item in activityItems) {
-        if ([item isKindOfClass:[UIImage class]] || [item isKindOfClass:[NSURL class]] || [item isKindOfClass:[NSData class]]) {
+- (BOOL)canPerformWithActivityItems:(NSArray*)activityItems {
+    for(id item in activityItems) {
+        if([item isKindOfClass:[UIImage class]] || [item isKindOfClass:[NSURL class]] ||
+           [item isKindOfClass:[NSData class]]) {
             return true;
         }
     }
@@ -41,28 +42,29 @@
     return false;
 }
 
--(void)prepareWithActivityItems:(NSArray*)activityItems {
+- (void)prepareWithActivityItems:(NSArray*)activityItems {
     items = activityItems;
 }
 
--(void)performActivity {
+- (void)performActivity {
     spawn_on_background_thread(^{
         FileSender* fileSender = [[FileSender alloc] init];
         [fileSender connectWithErrorBlock:nil];
 
-        for (id object in items) {
-            if ([object isKindOfClass:[NSURL class]]) {
+        for(id object in items) {
+            if([object isKindOfClass:[NSURL class]]) {
                 [fileSender sendURL:object];
             }
 
-            else if ([object isKindOfClass:[UIImage class]]) {
+            else if([object isKindOfClass:[UIImage class]]) {
                 [fileSender sendImage:object];
             }
 
-            else if ([object isKindOfClass:[NSData class]]) {
+            else if([object isKindOfClass:[NSData class]]) {
                 // For some strange, strange, reason, the actual filename (IMG_XXXX.JPG) is
                 // preserved in MobileSlideshow. This really makes me uncomfortable.
-                [fileSender sendData:object filename:[NSString stringWithFormat:@"Unknown-%lu", dataCount]];
+                [fileSender sendData:object
+                            filename:[NSString stringWithFormat:@"Unknown-%lu", dataCount]];
                 dataCount++;
             }
         }
@@ -70,13 +72,17 @@
     });
 }
 
--(UIViewController*)activityViewController {
-    if (![[dictWithPreferences() objectForKey:@"enabledui"] boolValue]) return nil;
+- (UIViewController*)activityViewController {
+    if(![[dictWithPreferences() objectForKey:@"enabledui"] boolValue])
+        return nil;
 
-    SendToDesktopViewController* controller = [[SendToDesktopViewController alloc] initWithArray:items];
+    SendToDesktopViewController* controller =
+        [[SendToDesktopViewController alloc] initWithArray:items];
 
     controller.doneBlock = ^{
-        spawn_on_main_thread(^{[self activityDidFinish:YES];});
+        spawn_on_main_thread(^{
+            [self activityDidFinish:YES];
+        });
     };
 
     return controller;

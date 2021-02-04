@@ -4,10 +4,8 @@
 #include <libssh2_sftp.h>
 
 NSDictionary* dictWithPreferences(void) {
-    NSString* prefsLocation = [NSString stringWithFormat:
-                                @"/var/mobile/Library/Preferences/%@.plist",
-                                DEFAULTS
-                            ];
+    NSString* prefsLocation =
+        [NSString stringWithFormat:@"/var/mobile/Library/Preferences/%@.plist", DEFAULTS];
 
     NSDictionary* array = [[NSDictionary alloc] initWithContentsOfFile:prefsLocation];
     return array;

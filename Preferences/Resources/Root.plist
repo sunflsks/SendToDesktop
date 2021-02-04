@@ -1,125 +1,125 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
-    <key>items</key>
-    <array>
+    <dict>
+        <key>items</key>
+        <array>
 
-        <dict>
-            <key>cell</key>
-            <string>PSGroupCell</string>
+            <dict>
+                <key>cell</key>
+                <string>PSGroupCell</string>
 
-            <key>label</key>
-            <string>Credentials</string>
-        </dict>
+                <key>label</key>
+                <string>Credentials</string>
+            </dict>
 
-        <dict>
-            <key>cell</key>
-            <string>PSEditTextCell</string>
+            <dict>
+                <key>cell</key>
+                <string>PSEditTextCell</string>
 
-            <key>defaults</key>
-            <string>us.sudhip.stdp</string>
+                <key>defaults</key>
+                <string>us.sudhip.stdp</string>
 
-            <key>key</key>
-            <string>username</string>
+                <key>key</key>
+                <string>username</string>
 
-            <key>noAutoCorrect</key>
-            <true/>
+                <key>noAutoCorrect</key>
+                <true/>
 
-            <key>placeholder</key>
-            <string>Username</string>
-        </dict>
+                <key>placeholder</key>
+                <string>Username</string>
+            </dict>
 
-        <dict>
-            <key>cell</key>
-            <string>PSSecureEditTextCell</string>
+            <dict>
+                <key>cell</key>
+                <string>PSSecureEditTextCell</string>
 
-            <key>defaults</key>
-            <string>us.sudhip.stdp</string>
+                <key>defaults</key>
+                <string>us.sudhip.stdp</string>
 
-            <key>key</key>
-            <string>password</string>
+                <key>key</key>
+                <string>password</string>
 
-            <key>noAutoCorrect</key>
-            <true/>
+                <key>noAutoCorrect</key>
+                <true/>
 
-            <key>placeholder</key>
-            <string>Password</string>
-        </dict>
+                <key>placeholder</key>
+                <string>Password</string>
+            </dict>
 
-        <dict>
-            <key>cell</key>
-            <string>PSGroupCell</string>
+            <dict>
+                <key>cell</key>
+                <string>PSGroupCell</string>
 
-            <key>footerText</key>
-            <string>Your password will not be shown after it is saved.</string>
-        </dict>
+                <key>footerText</key>
+                <string>Your password will not be shown after it is saved.</string>
+            </dict>
 
-        <dict>
-            <key>cell</key>
-            <string>PSGroupCell</string>
+            <dict>
+                <key>cell</key>
+                <string>PSGroupCell</string>
 
-            <key>label</key>
-            <string>Server</string>
-        </dict>
+                <key>label</key>
+                <string>Server</string>
+            </dict>
 
-        <dict>
-            <key>cell</key>
-            <string>PSEditTextCell</string>
+            <dict>
+                <key>cell</key>
+                <string>PSEditTextCell</string>
 
-            <key>defaults</key>
-            <string>us.sudhip.stdp</string>
+                <key>defaults</key>
+                <string>us.sudhip.stdp</string>
 
-            <key>key</key>
-            <string>hostname</string>
+                <key>key</key>
+                <string>hostname</string>
 
-            <key>noAutoCorrect</key>
-            <true/>
+                <key>noAutoCorrect</key>
+                <true/>
 
-            <key>placeholder</key>
-            <string>Hostname</string>
-        </dict>
+                <key>placeholder</key>
+                <string>Hostname</string>
+            </dict>
 
-        <dict>
-            <key>cell</key>
-            <string>PSEditTextCell</string>
+            <dict>
+                <key>cell</key>
+                <string>PSEditTextCell</string>
 
-            <key>defaults</key>
-            <string>us.sudhip.stdp</string>
+                <key>defaults</key>
+                <string>us.sudhip.stdp</string>
 
-            <key>key</key>
-            <string>directory</string>
+                <key>key</key>
+                <string>directory</string>
 
-            <key>noAutoCorrect</key>
-            <true/>
+                <key>noAutoCorrect</key>
+                <true/>
 
-            <key>placeholder</key>
-            <string>Folder</string>
-        </dict>
+                <key>placeholder</key>
+                <string>Folder</string>
+            </dict>
 
-        <dict>
-            <key>cell</key>
-            <string>PSGroupCell</string>
+            <dict>
+                <key>cell</key>
+                <string>PSGroupCell</string>
 
-            <key>label</key>
-            <string>UI</string>
-        </dict>
+                <key>label</key>
+                <string>UI</string>
+            </dict>
 
-        <dict>
-            <key>cell</key>
-            <string>PSSwitchCell</string>
+            <dict>
+                <key>cell</key>
+                <string>PSSwitchCell</string>
 
-            <key>label</key>
-            <string>Enable UI</string>
+                <key>label</key>
+                <string>Enable UI</string>
 
-            <key>default</key>
-            <true/>
+                <key>default</key>
+                <true/>
 
-            <key>key</key>
-            <string>enabledui</string>
-        </dict>
-    </array>
-    <key>title</key>
-    <string>SendToDesktopPreferences</string>
-</dict>
+                <key>key</key>
+                <string>enabledui</string>
+            </dict>
+        </array>
+        <key>title</key>
+        <string>SendToDesktopPreferences</string>
+    </dict>
 </plist>
