@@ -1,3 +1,6 @@
+#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+
 @interface FileSender : NSObject
 -(id)init;
 -(NSDictionary*)getDataFromURL:(NSURL*)url;
