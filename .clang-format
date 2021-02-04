@@ -1,0 +1,6 @@
+Language: ObjC
+ColumnLimit: 100
+IndentWidth: 4
+ObjCBlockIndentWidth: 4
+SpaceBeforeParens: Never
+UseTab: Never
