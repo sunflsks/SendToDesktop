@@ -4,3 +4,12 @@ IndentWidth: 4
 ObjCBlockIndentWidth: 4
 SpaceBeforeParens: Never
 UseTab: Never
+AllowShortCaseLabelsOnASingleLine: true
+IndentCaseLabels: true
+BreakBeforeTernaryOperators: true
+IncludeBlocks: Merge
+KeepEmptyLinesAtTheStartOfBlocks: false
+ObjCSpaceBeforeProtocolList: true
+PointerAlignment: Left
+ReflowComments: true
+SortIncludes: true
