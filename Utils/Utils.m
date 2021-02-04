@@ -3,15 +3,19 @@
 #define DEFAULTS @"us.sudhip.stdp"
 #include <libssh2_sftp.h>
 
-NSDictionary* dictWithPreferences(void) {
+NSDictionary*
+dictWithPreferences(void)
+{
     NSString* prefsLocation =
-        [NSString stringWithFormat:@"/var/mobile/Library/Preferences/%@.plist", DEFAULTS];
+      [NSString stringWithFormat:@"/var/mobile/Library/Preferences/%@.plist", DEFAULTS];
 
     NSDictionary* array = [[NSDictionary alloc] initWithContentsOfFile:prefsLocation];
     return array;
 }
 
-NSString* stringWithTimestamp(NSString* input) {
+NSString*
+stringWithTimestamp(NSString* input)
+{
     NSDate* date = [NSDate date];
     NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
 
@@ -21,22 +25,30 @@ NSString* stringWithTimestamp(NSString* input) {
     return [NSString stringWithFormat:@"%@ %@", dateString, input];
 }
 
-void Log(NSString* tolog) {
+void
+Log(NSString* tolog)
+{
     MRYIPCCenter* center = [MRYIPCCenter centerNamed:@"SendToDesktop/IPC"];
-    [center callExternalMethod:@selector(SDLogger:) withArguments:@{@"message" : tolog}];
+    [center callExternalMethod:@selector(SDLogger:) withArguments:@{ @"message" : tolog }];
 }
 
-void setPassword(NSString* passwordToSet) {
+void
+setPassword(NSString* passwordToSet)
+{
     MRYIPCCenter* center = [MRYIPCCenter centerNamed:@"SendToDesktop/IPC"];
     [center callExternalMethod:@selector(SDPasswordSetter:) withArguments:passwordToSet];
 }
 
-NSString* getPassword(void) {
+NSString*
+getPassword(void)
+{
     MRYIPCCenter* center = [MRYIPCCenter centerNamed:@"SendToDesktop/IPC"];
     return [center callExternalMethod:@selector(SDPasswordGetter:) withArguments:nil];
 }
 
-void playSentSound(void) {
+void
+playSentSound(void)
+{
     MRYIPCCenter* center = [MRYIPCCenter centerNamed:@"SendToDesktop/IPC"];
     [center callExternalMethod:@selector(playSentSound) withArguments:nil];
 }

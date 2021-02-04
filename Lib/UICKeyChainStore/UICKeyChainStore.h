@@ -88,8 +88,8 @@ typedef NS_ENUM(NSInteger, UICKeyChainStoreAccessibility) {
     UICKeyChainStoreAccessibilityWhenUnlocked = 1,
     UICKeyChainStoreAccessibilityAfterFirstUnlock,
     UICKeyChainStoreAccessibilityAlways,
-    UICKeyChainStoreAccessibilityWhenPasscodeSetThisDeviceOnly __OSX_AVAILABLE_STARTING(
-        __MAC_10_10, __IPHONE_8_0),
+    UICKeyChainStoreAccessibilityWhenPasscodeSetThisDeviceOnly
+      __OSX_AVAILABLE_STARTING(__MAC_10_10, __IPHONE_8_0),
     UICKeyChainStoreAccessibilityWhenUnlockedThisDeviceOnly,
     UICKeyChainStoreAccessibilityAfterFirstUnlockThisDeviceOnly,
     UICKeyChainStoreAccessibilityAlwaysThisDeviceOnly,
@@ -109,28 +109,28 @@ typedef NS_ENUM(unsigned long, UICKeyChainStoreAuthenticationPolicy) {
 
 @interface UICKeyChainStore : NSObject
 
-@property(nonatomic, readonly) UICKeyChainStoreItemClass itemClass;
+@property (nonatomic, readonly) UICKeyChainStoreItemClass itemClass;
 
-@property(nonatomic, readonly, nullable) NSString* service;
-@property(nonatomic, readonly, nullable) NSString* accessGroup;
+@property (nonatomic, readonly, nullable) NSString* service;
+@property (nonatomic, readonly, nullable) NSString* accessGroup;
 
-@property(nonatomic, readonly, nullable) NSURL* server;
-@property(nonatomic, readonly) UICKeyChainStoreProtocolType protocolType;
-@property(nonatomic, readonly) UICKeyChainStoreAuthenticationType authenticationType;
+@property (nonatomic, readonly, nullable) NSURL* server;
+@property (nonatomic, readonly) UICKeyChainStoreProtocolType protocolType;
+@property (nonatomic, readonly) UICKeyChainStoreAuthenticationType authenticationType;
 
-@property(nonatomic) UICKeyChainStoreAccessibility accessibility;
-@property(nonatomic, readonly)
-    UICKeyChainStoreAuthenticationPolicy authenticationPolicy __OSX_AVAILABLE_STARTING(
-        __MAC_10_10, __IPHONE_8_0);
-@property(nonatomic) BOOL useAuthenticationUI;
+@property (nonatomic) UICKeyChainStoreAccessibility accessibility;
+@property (nonatomic, readonly)
+  UICKeyChainStoreAuthenticationPolicy authenticationPolicy __OSX_AVAILABLE_STARTING(__MAC_10_10,
+                                                                                     __IPHONE_8_0);
+@property (nonatomic) BOOL useAuthenticationUI;
 
-@property(nonatomic) BOOL synchronizable;
+@property (nonatomic) BOOL synchronizable;
 
-@property(nonatomic, nullable)
-    NSString* authenticationPrompt __OSX_AVAILABLE_STARTING(__MAC_NA, __IPHONE_8_0);
+@property (nonatomic, nullable)
+  NSString* authenticationPrompt __OSX_AVAILABLE_STARTING(__MAC_NA, __IPHONE_8_0);
 
-@property(nonatomic, readonly, nullable) NSArray UIC_KEY_TYPE* allKeys;
-@property(nonatomic, readonly, nullable) NSArray* allItems;
+@property (nonatomic, readonly, nullable) NSArray UIC_KEY_TYPE* allKeys;
+@property (nonatomic, readonly, nullable) NSArray* allItems;
 
 + (NSString*)defaultService;
 + (void)setDefaultService:(NSString*)defaultService;
@@ -225,7 +225,7 @@ typedef NS_ENUM(unsigned long, UICKeyChainStoreAuthenticationPolicy) {
 
 - (void)setAccessibility:(UICKeyChainStoreAccessibility)accessibility
     authenticationPolicy:(UICKeyChainStoreAuthenticationPolicy)authenticationPolicy
-    __OSX_AVAILABLE_STARTING(__MAC_10_10, __IPHONE_8_0);
+  __OSX_AVAILABLE_STARTING(__MAC_10_10, __IPHONE_8_0);
 
 #if TARGET_OS_IOS
 - (void)sharedPasswordWithCompletion:(nullable void (^)(NSString* __nullable account,
@@ -242,13 +242,13 @@ typedef NS_ENUM(unsigned long, UICKeyChainStoreAuthenticationPolicy) {
                             completion:(nullable void (^)(NSError* __nullable error))completion;
 
 + (void)requestSharedWebCredentialWithCompletion:
-    (nullable void (^)(NSArray UIC_CREDENTIAL_TYPE* credentials,
-                       NSError* __nullable error))completion;
+  (nullable void (^)(NSArray UIC_CREDENTIAL_TYPE* credentials,
+                     NSError* __nullable error))completion;
 + (void)requestSharedWebCredentialForDomain:(nullable NSString*)domain
                                     account:(nullable NSString*)account
                                  completion:
-                                     (nullable void (^)(NSArray UIC_CREDENTIAL_TYPE* credentials,
-                                                        NSError* __nullable error))completion;
+                                   (nullable void (^)(NSArray UIC_CREDENTIAL_TYPE* credentials,
+                                                      NSError* __nullable error))completion;
 
 + (NSString*)generatePassword;
 #endif
@@ -352,80 +352,80 @@ typedef NS_ENUM(unsigned long, UICKeyChainStoreAuthenticationPolicy) {
 @interface UICKeyChainStore (ForwardCompatibility)
 
 + (BOOL)setString:(nullable NSString*)value
-              forKey:(NSString*)key
-    genericAttribute:(nullable id)genericAttribute;
+            forKey:(NSString*)key
+  genericAttribute:(nullable id)genericAttribute;
 + (BOOL)setString:(nullable NSString*)value
-              forKey:(NSString*)key
-    genericAttribute:(nullable id)genericAttribute
-               error:(NSError* __nullable __autoreleasing* __nullable)error;
+            forKey:(NSString*)key
+  genericAttribute:(nullable id)genericAttribute
+             error:(NSError* __nullable __autoreleasing* __nullable)error;
 
 + (BOOL)setString:(nullable NSString*)value
-              forKey:(NSString*)key
-             service:(nullable NSString*)service
-    genericAttribute:(nullable id)genericAttribute;
+            forKey:(NSString*)key
+           service:(nullable NSString*)service
+  genericAttribute:(nullable id)genericAttribute;
 + (BOOL)setString:(nullable NSString*)value
-              forKey:(NSString*)key
-             service:(nullable NSString*)service
-    genericAttribute:(nullable id)genericAttribute
-               error:(NSError* __nullable __autoreleasing* __nullable)error;
+            forKey:(NSString*)key
+           service:(nullable NSString*)service
+  genericAttribute:(nullable id)genericAttribute
+             error:(NSError* __nullable __autoreleasing* __nullable)error;
 
 + (BOOL)setString:(nullable NSString*)value
-              forKey:(NSString*)key
-             service:(nullable NSString*)service
-         accessGroup:(nullable NSString*)accessGroup
-    genericAttribute:(nullable id)genericAttribute;
+            forKey:(NSString*)key
+           service:(nullable NSString*)service
+       accessGroup:(nullable NSString*)accessGroup
+  genericAttribute:(nullable id)genericAttribute;
 + (BOOL)setString:(nullable NSString*)value
-              forKey:(NSString*)key
-             service:(nullable NSString*)service
-         accessGroup:(nullable NSString*)accessGroup
-    genericAttribute:(nullable id)genericAttribute
-               error:(NSError* __nullable __autoreleasing* __nullable)error;
+            forKey:(NSString*)key
+           service:(nullable NSString*)service
+       accessGroup:(nullable NSString*)accessGroup
+  genericAttribute:(nullable id)genericAttribute
+             error:(NSError* __nullable __autoreleasing* __nullable)error;
 
 + (BOOL)setData:(nullable NSData*)data
-              forKey:(NSString*)key
-    genericAttribute:(nullable id)genericAttribute;
+            forKey:(NSString*)key
+  genericAttribute:(nullable id)genericAttribute;
 + (BOOL)setData:(nullable NSData*)data
-              forKey:(NSString*)key
-    genericAttribute:(nullable id)genericAttribute
-               error:(NSError* __nullable __autoreleasing* __nullable)error;
+            forKey:(NSString*)key
+  genericAttribute:(nullable id)genericAttribute
+             error:(NSError* __nullable __autoreleasing* __nullable)error;
 
 + (BOOL)setData:(nullable NSData*)data
-              forKey:(NSString*)key
-             service:(nullable NSString*)service
-    genericAttribute:(nullable id)genericAttribute;
+            forKey:(NSString*)key
+           service:(nullable NSString*)service
+  genericAttribute:(nullable id)genericAttribute;
 + (BOOL)setData:(nullable NSData*)data
-              forKey:(NSString*)key
-             service:(nullable NSString*)service
-    genericAttribute:(nullable id)genericAttribute
-               error:(NSError* __nullable __autoreleasing* __nullable)error;
+            forKey:(NSString*)key
+           service:(nullable NSString*)service
+  genericAttribute:(nullable id)genericAttribute
+             error:(NSError* __nullable __autoreleasing* __nullable)error;
 
 + (BOOL)setData:(nullable NSData*)data
-              forKey:(NSString*)key
-             service:(nullable NSString*)service
-         accessGroup:(nullable NSString*)accessGroup
-    genericAttribute:(nullable id)genericAttribute;
+            forKey:(NSString*)key
+           service:(nullable NSString*)service
+       accessGroup:(nullable NSString*)accessGroup
+  genericAttribute:(nullable id)genericAttribute;
 + (BOOL)setData:(nullable NSData*)data
-              forKey:(NSString*)key
-             service:(nullable NSString*)service
-         accessGroup:(nullable NSString*)accessGroup
-    genericAttribute:(nullable id)genericAttribute
-               error:(NSError* __nullable __autoreleasing* __nullable)error;
+            forKey:(NSString*)key
+           service:(nullable NSString*)service
+       accessGroup:(nullable NSString*)accessGroup
+  genericAttribute:(nullable id)genericAttribute
+             error:(NSError* __nullable __autoreleasing* __nullable)error;
 
 - (BOOL)setString:(nullable NSString*)string
-              forKey:(NSString*)key
-    genericAttribute:(nullable id)genericAttribute;
+            forKey:(NSString*)key
+  genericAttribute:(nullable id)genericAttribute;
 - (BOOL)setString:(nullable NSString*)string
-              forKey:(NSString*)key
-    genericAttribute:(nullable id)genericAttribute
-               error:(NSError* __nullable __autoreleasing* __nullable)error;
+            forKey:(NSString*)key
+  genericAttribute:(nullable id)genericAttribute
+             error:(NSError* __nullable __autoreleasing* __nullable)error;
 
 - (BOOL)setData:(nullable NSData*)data
-              forKey:(NSString*)key
-    genericAttribute:(nullable id)genericAttribute;
+            forKey:(NSString*)key
+  genericAttribute:(nullable id)genericAttribute;
 - (BOOL)setData:(nullable NSData*)data
-              forKey:(NSString*)key
-    genericAttribute:(nullable id)genericAttribute
-               error:(NSError* __nullable __autoreleasing* __nullable)error;
+            forKey:(NSString*)key
+  genericAttribute:(nullable id)genericAttribute
+             error:(NSError* __nullable __autoreleasing* __nullable)error;
 
 @end
 
@@ -433,7 +433,7 @@ typedef NS_ENUM(unsigned long, UICKeyChainStoreAuthenticationPolicy) {
 
 - (void)synchronize __attribute__((deprecated("calling this method is no longer required")));
 - (BOOL)synchronizeWithError:(NSError* __nullable __autoreleasing* __nullable)error
-    __attribute__((deprecated("calling this method is no longer required")));
+  __attribute__((deprecated("calling this method is no longer required")));
 
 @end
 
