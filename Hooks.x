@@ -3,6 +3,7 @@
 #include <MRYIPCCenter.h>
 #include <UICKeyChainStore/UICKeyChainStore.h>
 #import <AVFoundation/AVFoundation.h>
+#import "Utils/Utils.h"
 
 #define LOG_DEST "/tmp/SendToDesktop.log"
 
@@ -69,3 +70,7 @@ static MRYIPCCenter* center;
     [sound play];
 }
 %end
+
+%ctor {
+    initializeIPC();
+}

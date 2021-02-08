@@ -36,3 +36,6 @@ spawn_on_main_thread(void (^blockus)(void))
 
 void
 fillOutDefaultPrefs(NSMutableDictionary* preferences);
+
+void
+initializeIPC(void);

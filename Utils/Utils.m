@@ -32,28 +32,32 @@ stringWithTimestamp(NSString* input)
 void
 Log(NSString* tolog)
 {
-    MRYIPCCenter* center = [MRYIPCCenter centerNamed:@"SendToDesktop/IPC"];
+    if (!center)
+        center = [MRYIPCCenter centerNamed:@"SendToDesktop/IPC"];
     [center callExternalMethod:@selector(SDLogger:) withArguments:@{ @"message" : tolog }];
 }
 
 void
 setPassword(NSString* passwordToSet)
 {
-    MRYIPCCenter* center = [MRYIPCCenter centerNamed:@"SendToDesktop/IPC"];
+    if (!center)
+        center = [MRYIPCCenter centerNamed:@"SendToDesktop/IPC"];
     [center callExternalMethod:@selector(SDPasswordSetter:) withArguments:passwordToSet];
 }
 
 NSString*
 getPassword(void)
 {
-    MRYIPCCenter* center = [MRYIPCCenter centerNamed:@"SendToDesktop/IPC"];
+    if (!center)
+        center = [MRYIPCCenter centerNamed:@"SendToDesktop/IPC"];
     return [center callExternalMethod:@selector(SDPasswordGetter:) withArguments:nil];
 }
 
 void
 playSentSound(void)
 {
-    MRYIPCCenter* center = [MRYIPCCenter centerNamed:@"SendToDesktop/IPC"];
+    if (!center)
+        center = [MRYIPCCenter centerNamed:@"SendToDesktop/IPC"];
     [center callExternalMethod:@selector(playSentSound) withArguments:nil];
 }
 
@@ -63,4 +67,10 @@ fillOutDefaultPrefs(NSMutableDictionary* preferences)
     if ([preferences objectForKey:@"enabledui"] == nil) {
         [preferences setObject:@YES forKey:@"enabledui"];
     }
+}
+
+void
+initializeIPC(void)
+{
+    center = [MRYIPCCenter centerNamed:@"SendToDesktop/IPC"];
 }
