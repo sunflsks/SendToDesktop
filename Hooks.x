@@ -70,7 +70,3 @@ static MRYIPCCenter* center;
     [sound play];
 }
 %end
-
-%ctor {
-    initializeIPC();
-}

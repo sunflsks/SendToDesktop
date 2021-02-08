@@ -68,9 +68,3 @@ fillOutDefaultPrefs(NSMutableDictionary* preferences)
         [preferences setObject:@YES forKey:@"enabledui"];
     }
 }
-
-void
-initializeIPC(void)
-{
-    center = [MRYIPCCenter centerNamed:@"SendToDesktop/IPC"];
-}
