@@ -2,7 +2,7 @@ Package: us.sudhip.sendtodesktop
 Name: SendToDesktop
 Version: 1.0.0
 Architecture: iphoneos-arm
-Description: An awesome MobileSubstrate tweak!
+Description: Send files from your phone to your PC
 Maintainer: Sudhip
 Author: Sudhip
 Section: Tweaks
