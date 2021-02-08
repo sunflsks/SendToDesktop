@@ -33,3 +33,6 @@ spawn_on_main_thread(void (^blockus)(void))
 {
     dispatch_async(dispatch_get_main_queue(), blockus);
 }
+
+void
+fillOutDefaultPrefs(NSMutableDictionary* preferences);

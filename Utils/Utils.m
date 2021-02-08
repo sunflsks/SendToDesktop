@@ -1,7 +1,10 @@
 #import <Foundation/Foundation.h>
 #include <MRYIPCCenter.h>
 #define DEFAULTS @"us.sudhip.stdp"
+#include "Utils.h"
 #include <libssh2_sftp.h>
+
+static MRYIPCCenter* center;
 
 NSDictionary*
 dictWithPreferences(void)
@@ -9,7 +12,8 @@ dictWithPreferences(void)
     NSString* prefsLocation =
       [NSString stringWithFormat:@"/var/mobile/Library/Preferences/%@.plist", DEFAULTS];
 
-    NSDictionary* array = [[NSDictionary alloc] initWithContentsOfFile:prefsLocation];
+    NSMutableDictionary* array = [[NSMutableDictionary alloc] initWithContentsOfFile:prefsLocation];
+    fillOutDefaultPrefs(array);
     return array;
 }
 
@@ -51,4 +55,12 @@ playSentSound(void)
 {
     MRYIPCCenter* center = [MRYIPCCenter centerNamed:@"SendToDesktop/IPC"];
     [center callExternalMethod:@selector(playSentSound) withArguments:nil];
+}
+
+void
+fillOutDefaultPrefs(NSMutableDictionary* preferences)
+{
+    if ([preferences objectForKey:@"enabledui"] == nil) {
+        [preferences setObject:@YES forKey:@"enabledui"];
+    }
 }
