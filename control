@@ -1,6 +1,6 @@
 Package: us.sudhip.sendtodesktop
 Name: SendToDesktop
-Version: 1.0.0
+Version: 1.0.1
 Architecture: iphoneos-arm
 Description: Send files from your phone to your PC
 Maintainer: Sudhip
