@@ -247,6 +247,10 @@ SendToDesktopViewController ()
                     data = [sender getDataFromImage:object];
                 }
 
+                else if ([object isKindOfClass:[NSData class]]) {
+                    data = [sender getDataFromData:object];
+                }
+
                 if (data == nil) {
                     dismissControllerInAnotherMethod = YES;
                     spawn_on_main_thread(^{

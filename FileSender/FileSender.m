@@ -26,6 +26,7 @@ FileSender ()
     NMSSHSession* session;
     void (^error)(NSString* error);
     int imageCounter;
+    int dataCounter;
 }
 
 - (id)init
@@ -35,6 +36,7 @@ FileSender ()
         return nil;
 
     imageCounter = 0;
+    dataCounter = 0;
 
     NSDictionary* prefs = dictWithPreferences();
     hostName = prefs[@"hostname"];
@@ -94,6 +96,13 @@ FileSender ()
     }
 
     return YES;
+}
+
+// This is necessary to get the filename as well
+- (NSDictionary*)getDataFromData:(NSData*)data
+{
+    return
+      @{ @"data" : data, @"filename" : [NSString stringWithFormat:@"Unknown-%d", dataCounter] };
 }
 
 - (NSDictionary*)getDataFromURL:(NSURL*)url

@@ -4,6 +4,7 @@
 @interface FileSender : NSObject
 - (id)init;
 - (NSDictionary*)getDataFromURL:(NSURL*)url;
+- (NSDictionary*)getDataFromData:(NSData*)data;
 - (BOOL)sendURL:(NSURL*)url;
 - (BOOL)sendURL:(NSURL*)url progress:(BOOL (^)(NSUInteger))progress;
 - (NSDictionary*)getDataFromImage:(UIImage*)image;
