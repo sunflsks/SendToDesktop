@@ -14,5 +14,6 @@
 - (BOOL)sendData:(NSData*)data filename:(NSString*)filename progress:(BOOL (^)(NSUInteger))progress;
 - (BOOL)sendDataDict:(NSDictionary*)data progress:(BOOL (^)(NSUInteger))progress;
 - (BOOL)connectWithErrorBlock:(void (^)(NSString* error))error;
+- (NSDictionary*)getDataFromString:(NSString*)string;
 - (void)disconnect;
 @end

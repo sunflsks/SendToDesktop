@@ -27,6 +27,7 @@ FileSender ()
     void (^error)(NSString* error);
     int imageCounter;
     int dataCounter;
+    int stringCounter;
 }
 
 - (id)init
@@ -37,6 +38,7 @@ FileSender ()
 
     imageCounter = 0;
     dataCounter = 0;
+    stringCounter = 0;
 
     NSDictionary* prefs = dictWithPreferences();
     hostName = prefs[@"hostname"];
@@ -119,6 +121,14 @@ FileSender ()
     NSData* data = UIImageJPEGRepresentation(image, 0);
     NSString* filename = [NSString stringWithFormat:@"IMG-%d.jpg", imageCounter];
     imageCounter++;
+    return @{ @"data" : data, @"filename" : filename };
+}
+
+- (NSDictionary*)getDataFromString:(NSString*)string
+{
+    NSData* data = [string dataUsingEncoding:NSUTF8StringEncoding];
+    NSString* filename = [NSString stringWithFormat:@"String-%d.txt", stringCounter];
+    stringCounter++;
     return @{ @"data" : data, @"filename" : filename };
 }
 

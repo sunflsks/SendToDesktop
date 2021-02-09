@@ -41,7 +41,7 @@
     for (id item in activityItems) {
         Log(stringWithTimestamp(NSStringFromClass([item class])));
         if ([item isKindOfClass:[UIImage class]] || [item isKindOfClass:[NSURL class]] ||
-            [item isKindOfClass:[NSData class]]) {
+            [item isKindOfClass:[NSData class]] || [item isKindOfClass:[NSString class]]) {
             return true;
         } else {
             Log(stringWithTimestamp(@"Could not perform."));
@@ -77,6 +77,13 @@
                 // preserved in MobileSlideshow. This really makes me uncomfortable.
                 [fileSender sendData:object
                             filename:[NSString stringWithFormat:@"Unknown-%lu", dataCount]];
+                dataCount++;
+            }
+
+            else if ([object isKindOfClass:[NSString class]]) {
+                NSData* data = [object dataUsingEncoding:NSUTF8StringEncoding];
+                [fileSender sendData:data
+                            filename:[NSString stringWithFormat:@"Text-%lu.txt", dataCount]];
                 dataCount++;
             }
         }

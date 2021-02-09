@@ -252,6 +252,10 @@ SendToDesktopViewController ()
                     data = [sender getDataFromData:object];
                 }
 
+                else if ([object isKindOfClass:[NSString class]]) {
+                    data = [sender getDataFromString:object];
+                }
+
                 if (data == nil) {
                     dismissControllerInAnotherMethod = YES;
                     spawn_on_main_thread(^{
