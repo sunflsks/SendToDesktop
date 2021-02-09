@@ -46,6 +46,7 @@ SendToDesktopViewController ()
 
 - (id)initWithArray:(NSArray*)sentArray
 {
+    Log(stringWithTimestamp(@"VC Initializd"));
     self = [super init];
     if (!self)
         return nil;

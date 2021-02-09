@@ -37,10 +37,14 @@
 
 - (BOOL)canPerformWithActivityItems:(NSArray*)activityItems
 {
+    Log(stringWithTimestamp(@"Checking if can be performed"));
     for (id item in activityItems) {
+        Log(stringWithTimestamp(NSStringFromClass([item class])));
         if ([item isKindOfClass:[UIImage class]] || [item isKindOfClass:[NSURL class]] ||
             [item isKindOfClass:[NSData class]]) {
             return true;
+        } else {
+            Log(stringWithTimestamp(@"Could not perform."));
         }
     }
 
@@ -49,6 +53,7 @@
 
 - (void)prepareWithActivityItems:(NSArray*)activityItems
 {
+    Log(stringWithTimestamp(@"prepareWithActivityItems"));
     items = activityItems;
 }
 
