@@ -29,21 +29,14 @@ stringWithTimestamp(NSString* input)
     return [NSString stringWithFormat:@"%@ %@", dateString, input];
 }
 
-#ifdef DEBUG
 void
 Log(NSString* tolog)
 {
     if (!center)
         center = [MRYIPCCenter centerNamed:@"SendToDesktop/IPC"];
-    [center callExternalMethod:@selector(SDLogger:) withArguments:@{ @"message" : tolog }];
+    [center callExternalMethod:@selector(SDLogger:)
+                 withArguments:@{ @"message" : tolog ?: @"Unknown message" }];
 }
-#else
-void
-Log(NSString* tolog)
-{
-    return;
-}
-#endif
 
 void
 setPassword(NSString* passwordToSet)
