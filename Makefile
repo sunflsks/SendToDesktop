@@ -16,6 +16,8 @@ FileSender/FileSender.m
 
 SendToDesktop_CFLAGS = -fobjc-arc -I./Lib -Wall -Werror
 SendToDesktop_LIBRARIES = NMSSH z sunflsks mryipc
+LDFLAGS += -L./Lib/NMSSH/.theos/obj/debug/
 include $(THEOS_MAKE_PATH)/tweak.mk
 SUBPROJECTS += Preferences
+SUBPROJECTS += Lib/NMSSH
 include $(THEOS_MAKE_PATH)/aggregate.mk
