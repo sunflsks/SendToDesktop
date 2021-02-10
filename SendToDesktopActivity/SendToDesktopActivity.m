@@ -64,28 +64,11 @@
         [fileSender connectWithErrorBlock:nil];
 
         for (id object in items) {
-            if ([object isKindOfClass:[NSURL class]]) {
-                [fileSender sendURL:object];
+            if (![FileSender canSendObject:object]) {
+                continue;
             }
 
-            else if ([object isKindOfClass:[UIImage class]]) {
-                [fileSender sendImage:object];
-            }
-
-            else if ([object isKindOfClass:[NSData class]]) {
-                // For some strange, strange, reason, the actual filename (IMG_XXXX.JPG) is
-                // preserved in MobileSlideshow. This really makes me uncomfortable.
-                [fileSender sendData:object
-                            filename:[NSString stringWithFormat:@"Unknown-%lu", dataCount]];
-                dataCount++;
-            }
-
-            else if ([object isKindOfClass:[NSString class]]) {
-                NSData* data = [object dataUsingEncoding:NSUTF8StringEncoding];
-                [fileSender sendData:data
-                            filename:[NSString stringWithFormat:@"Text-%lu.txt", dataCount]];
-                dataCount++;
-            }
+            [fileSender sendDataDict:[fileSender getDataFromObject:object] progress:nil];
         }
         [fileSender disconnect];
     });

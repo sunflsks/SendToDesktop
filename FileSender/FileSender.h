@@ -2,6 +2,8 @@
 #import <UIKit/UIKit.h>
 
 @interface FileSender : NSObject
++ (BOOL)canSendObject:(id)object;
+- (NSDictionary*)getDataFromObject:(id)object;
 - (id)init;
 - (NSDictionary*)getDataFromURL:(NSURL*)url;
 - (NSDictionary*)getDataFromData:(NSData*)data;

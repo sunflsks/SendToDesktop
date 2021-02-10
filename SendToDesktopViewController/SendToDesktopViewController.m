@@ -240,30 +240,19 @@ SendToDesktopViewController ()
                 spawn_on_main_thread(^{
                     [self setFileCounter:counter total:[array count]];
                 });
+
                 NSDictionary* data;
-                if ([object isKindOfClass:[NSURL class]]) {
-                    data = [sender getDataFromURL:object];
-                }
 
-                else if ([object isKindOfClass:[UIImage class]]) {
-                    data = [sender getDataFromImage:object];
-                }
-
-                else if ([object isKindOfClass:[NSData class]]) {
-                    data = [sender getDataFromData:object];
-                }
-
-                else if ([object isKindOfClass:[NSString class]]) {
-                    data = [sender getDataFromString:object];
-                }
-
-                else {
+                if (![FileSender canSendObject:object]) {
                     dismissControllerInAnotherMethod = YES;
                     spawn_on_main_thread(^{
-                        [self spawnErrorAndQuit:@"Invalid object! Previous files should still be sent."];
+                        [self spawnErrorAndQuit:
+                                @"Invalid object! Previous files should still be sent."];
                     });
                     break;
                 }
+
+                data = [sender getDataFromObject:object];
 
                 if (data == nil) {
                     dismissControllerInAnotherMethod = YES;

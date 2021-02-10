@@ -30,6 +30,44 @@ FileSender ()
     int stringCounter;
 }
 
++ (BOOL)canSendObject:(id)object
+{
+    if ([object isKindOfClass:[NSURL class]] || [object isKindOfClass:[UIImage class]] ||
+        [object isKindOfClass:[NSData class]] || [object isKindOfClass:[NSString class]]) {
+        TimeLog([NSString
+          stringWithFormat:@"Can send object of type %@", NSStringFromClass([object class])]);
+        return YES;
+    }
+
+    TimeLog([NSString
+      stringWithFormat:@"CANNOT send object of type %@", NSStringFromClass([object class])]);
+    return NO;
+}
+
+- (NSDictionary*)getDataFromObject:(id)object
+{
+    if ([object isKindOfClass:[NSURL class]]) {
+        return [self getDataFromURL:object];
+    }
+
+    else if ([object isKindOfClass:[UIImage class]]) {
+        return [self getDataFromImage:object];
+    }
+
+    else if ([object isKindOfClass:[NSData class]]) {
+        return [self getDataFromData:object];
+    }
+
+    else if ([object isKindOfClass:[NSString class]]) {
+        return [self getDataFromString:object];
+    }
+
+    else {
+        TimeLog(@"Couldn't get data from object - was invalid");
+        return nil;
+    }
+}
+
 - (id)init
 {
     self = [super init];
