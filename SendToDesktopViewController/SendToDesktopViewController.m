@@ -167,7 +167,6 @@ SendToDesktopViewController ()
                                                 self.progressView.center.y + 15,
                                                 [UIScreen mainScreen].bounds.size.width - 20,
                                                 20)];
-    NSLog(@"%f", self.progressView.center.y);
     [self.bytesSentLabel
       setCenter:CGPointMake(self.view.center.x, self.progressView.center.y + 20)];
     [self.bytesSentLabel setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleCallout]];
