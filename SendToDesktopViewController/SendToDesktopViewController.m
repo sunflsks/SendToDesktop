@@ -232,6 +232,7 @@ SendToDesktopViewController ()
             });
         }];
 
+        // TODO: Filter out the invalid objects beforehand
         if (!abortTransfer) {
             int counter = 0;
             for (id object in array) {
@@ -254,6 +255,14 @@ SendToDesktopViewController ()
 
                 else if ([object isKindOfClass:[NSString class]]) {
                     data = [sender getDataFromString:object];
+                }
+
+                else {
+                    dismissControllerInAnotherMethod = YES;
+                    spawn_on_main_thread(^{
+                        [self spawnErrorAndQuit:@"Invalid object! Previous files should still be sent."];
+                    });
+                    break;
                 }
 
                 if (data == nil) {
