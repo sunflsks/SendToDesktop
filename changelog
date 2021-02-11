@@ -4,5 +4,6 @@
 1.0.3: Add method to check if object can even be sent instead of just letting it drop down in the if/else
 1.0.4: Use a unified sending mechanism - removes the need for the last three checks as they are all in the FileSender object instead
 1.0.5: Move NMSSH itself inside of the tree
+1.0.5.1: Do not abort the transfer if the object is invalid
 1.0.6 (Planned): Add support for iOS 12 and lower, and add option for changing SSH port
 1.0.7 (Planned): Add support for SSH keys

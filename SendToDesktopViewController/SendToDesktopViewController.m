@@ -244,12 +244,7 @@ SendToDesktopViewController ()
                 NSDictionary* data;
 
                 if (![FileSender canSendObject:object]) {
-                    dismissControllerInAnotherMethod = YES;
-                    spawn_on_main_thread(^{
-                        [self spawnErrorAndQuit:
-                                @"Invalid object! Previous files should still be sent."];
-                    });
-                    break;
+                    continue;
                 }
 
                 data = [sender getDataFromObject:object];
