@@ -32,6 +32,8 @@
     NSMutableDictionary* prefs = [[NSMutableDictionary alloc] init];
     [prefs addEntriesFromDictionary:[[NSDictionary alloc] initWithContentsOfFile:prefsString]];
 
+    // Sticking the password in keychain makes sure other apps cannot access it, but it doesn't
+    // prevent other tweaks from accessing it. Something is better than nothing :/
     if ([specifier.properties[@"key"] isEqualToString:@"password"]) {
         setPassword(value);
     }

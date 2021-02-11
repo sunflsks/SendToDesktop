@@ -9,6 +9,9 @@
 
 static AVAudioPlayer* sound = nil;
 
+// The only things I actually hook are for adding the object and the unsandboxed methods that
+// will be called with MRYIPC
+
 %hook UIActivityViewController
 
 -(id)initWithActivityItems:(NSArray*)objects applicationActivities:(NSArray*)activities {

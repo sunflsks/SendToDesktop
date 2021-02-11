@@ -27,6 +27,7 @@ SendToDesktopViewController ()
     NSArray* array;
     FileSender* sender;
     BOOL abortTransfer;
+    // This ivar is set for things like an error message where the activity will be interrupted.
     __block BOOL dismissControllerInAnotherMethod;
 }
 

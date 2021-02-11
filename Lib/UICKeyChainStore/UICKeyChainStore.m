@@ -7,7 +7,7 @@
 //
 
 // #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-#pragma message "Deprecated behavior inside!"
+// #pragma message "Deprecated behavior inside!"
 #import "UICKeyChainStore.h"
 
 NSString* const UICKeyChainStoreErrorDomain = @"com.kishikawakatsumi.uickeychainstore";

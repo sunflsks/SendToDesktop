@@ -29,6 +29,8 @@ stringWithTimestamp(NSString* input)
     return [NSString stringWithFormat:@"%@ %@", dateString, input];
 }
 
+// These are all just wrapper functions to call the unsandboxed methods that I've put in Springboard
+// with MRYIPC
 void
 Log(NSString* tolog)
 {
