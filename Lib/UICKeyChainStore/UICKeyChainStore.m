@@ -1269,7 +1269,7 @@ UICKeyChainStore ()
 
 #pragma mark -
 
-#if TARGET_OS_IOS && !TARGET_OS_MACCATALYST
+#if TARGET_OS_IOS
 - (void)sharedPasswordWithCompletion:
   (void (^)(NSString* account, NSString* password, NSError* error))completion
 {

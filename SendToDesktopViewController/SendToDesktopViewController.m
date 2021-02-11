@@ -7,6 +7,7 @@
 
 #import "SendToDesktopViewController.h"
 #import "../FileSender/FileSender.h"
+#import "../UIKitExtensions.h"
 #import "../Utils/Utils.h"
 
 @interface
@@ -56,7 +57,7 @@ SendToDesktopViewController ()
     sender = [[FileSender alloc] init];
 
     if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
-        self.view.backgroundColor = [UIColor systemGray5Color];
+        self.view.backgroundColor = [UIColor colorWithRed:0.17 green:0.17 blue:0.18 alpha:1.00];
     } else {
         self.view.backgroundColor = [UIColor whiteColor];
     }

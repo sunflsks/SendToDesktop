@@ -1,8 +1,8 @@
-TARGET := iphone:clang:latest:7.0
+TARGET := iphone:clang:12.0:12.0
 
 include $(THEOS)/makefiles/common.mk
 
-ARCHS = arm64 arm64e armv7 armv7s
+ARCHS = arm64 arm64e
 
 LIBRARY_NAME = libNMSSH
 libNMSSH_FILES = $(wildcard *.m)

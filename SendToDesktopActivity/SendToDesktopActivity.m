@@ -1,6 +1,7 @@
 #import "SendToDesktopActivity.h"
 #import "../FileSender/FileSender.h"
 #import "../SendToDesktopViewController/SendToDesktopViewController.h"
+#import "../UIKitExtensions.h"
 #import "../Utils/Utils.h"
 #import <UIKit/UIKit.h>
 
@@ -32,7 +33,10 @@
 
 - (UIImage*)activityImage
 {
-    return [UIImage systemImageNamed:@"desktopcomputer"];
+    if ([[UIImage class] respondsToSelector:@selector(systemImageNamed:)]) {
+        return [UIImage systemImageNamed:@"desktopcomputer"];
+    }
+    return nil;
 }
 
 - (BOOL)canPerformWithActivityItems:(NSArray*)activityItems
