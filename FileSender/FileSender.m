@@ -21,6 +21,7 @@ FileSender ()
 
     NSString* userName;
     NSString* password;
+    NSUInteger port;
 
     NSString* remoteDirectory;
     NMSSHSession* session;
@@ -83,6 +84,7 @@ FileSender ()
 
     userName = prefs[@"username"];
     password = getPassword();
+    port = [prefs[@"port"] intValue];
 
     remoteDirectory = prefs[@"directory"];
 
@@ -106,7 +108,8 @@ FileSender ()
         return NO;
     }
 
-    session = [NMSSHSession connectToHost:hostName withUsername:userName];
+    TimeLog([NSString stringWithFormat:@"Connecting to host %@ with port %lu", hostName, port]);
+    session = [NMSSHSession connectToHost:hostName port:port withUsername:userName];
     if (!session.isConnected) {
         TimeLog(@"Could not connect to remote. Exiting");
         if (error != nil)
