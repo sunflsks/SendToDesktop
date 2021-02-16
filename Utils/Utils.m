@@ -71,7 +71,7 @@ fillOutDefaultPrefs(NSMutableDictionary* preferences)
         [preferences setObject:@YES forKey:@"enabledui"];
     }
 
-    if (preferences[@"port"] == nil) {
+    if ([preferences[@"port"] length] == 0) {
         preferences[@"port"] = @22;
     }
 }
