@@ -45,4 +45,9 @@
     [prefs writeToFile:prefsString atomically:YES];
 }
 
+-(void)clearPreferences {
+    unlink([[NSString stringWithFormat:@"/var/mobile/Library/Preferences/%@.plist", DEFAULTS] UTF8String]);
+    [self reloadSpecifiers];
+}
+
 @end

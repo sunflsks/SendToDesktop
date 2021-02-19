@@ -146,6 +146,37 @@
                 <key>isNumeric</key>
                 <true/>
             </dict>
+
+            <dict>
+                <key>cell</key>
+                <string>PSGroupCell</string>
+            </dict>
+
+            <dict>
+                <key>cell</key>
+                <string>PSButtonCell</string>
+
+                <key>label</key>
+                <string>Reset Preferences</string>
+
+                <key>action</key>
+                <string>clearPreferences</string>
+
+                <key>confirmation</key>
+                <dict>
+                    <key>title</key>
+                    <string>This cannot be undone. Proceed?</string>
+
+                    <key>okTitle</key>
+                    <string>Yes</string>
+
+                    <key>cancelTitle</key>
+                    <string>No</string>
+                </dict>
+
+                <key>isDestructive</key>
+                <true/>
+            </dict>
         </array>
         <key>title</key>
         <string>SendToDesktopPreferences</string>

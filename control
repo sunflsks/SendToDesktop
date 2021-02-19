@@ -3,8 +3,7 @@ Name: SendToDesktop
 Version: 1.0.6.1
 Architecture: iphoneos-arm
 Description: Send files from your phone to your PC
-Maintainer: Sudhip
-Author: Sudhip
+Maintainer: sunflsks
 Section: Tweaks
 Depends: mobilesubstrate (>= 0.9.5000), preferenceloader (>= 2.2.3), com.muirey03.libmryipc, us.sudhip.libsunflsks
 Icon: http://ftp.sudhip.com/jbrepo/assets/sendtodesktop.png
