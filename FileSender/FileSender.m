@@ -95,7 +95,7 @@ FileSender ()
 {
     error = errorBlock;
 
-    if (!hostName || !userName || !password) {
+    if (!hostName || !userName || !password || !remoteDirectory) {
         if (error != nil)
             error(@"Required preferences are blank.");
         return NO;
