@@ -255,7 +255,9 @@ SendToDesktopViewController ()
                     spawn_on_main_thread(^{
                         [self spawnErrorAndQuit:@"Could not download/allocate data."];
                     });
+                    continue;
                 }
+
                 BOOL (^sentBytesProgress)(NSUInteger) = ^BOOL(NSUInteger sent) {
                     if (abortTransfer) {
                         return NO;
