@@ -150,11 +150,30 @@ FileSender ()
 
 - (NSDictionary*)getDataFromURL:(NSURL*)url
 {
-    NSData* data = [[NSData alloc] initWithContentsOfURL:url];
-    if (data == nil)
-        return nil;
+    id data = nil;
+    NSUInteger length = 0;
+
+    if ([url isFileURL]) {
+        data = [[NSInputStream alloc] initWithURL:url];
+        if (data == nil)
+            return nil;
+        length = [[[NSFileManager defaultManager] attributesOfItemAtPath:url.path
+                                                                   error:nil] fileSize];
+    }
+
+    else {
+        data = [[NSData alloc] initWithContentsOfURL:url];
+        if (data == nil)
+            return nil;
+        length = ((NSData*)data).length;
+    }
+
     NSString* filename = [url lastPathComponent];
-    return @{ @"data" : data, @"filename" : filename };
+    return @{
+        @"data" : data,
+        @"filename" : filename,
+        @"length" : [NSNumber numberWithUnsignedLong:length]
+    };
 }
 
 - (NSDictionary*)getDataFromImage:(UIImage*)image
@@ -162,7 +181,11 @@ FileSender ()
     NSData* data = UIImageJPEGRepresentation(image, 0);
     NSString* filename = [NSString stringWithFormat:@"IMG-%d.jpg", imageCounter];
     imageCounter++;
-    return @{ @"data" : data, @"filename" : filename };
+    return @{
+        @"data" : data,
+        @"filename" : filename,
+        @"length" : [NSNumber numberWithUnsignedLong:data.length]
+    };
 }
 
 - (NSDictionary*)getDataFromString:(NSString*)string
@@ -170,7 +193,11 @@ FileSender ()
     NSData* data = [string dataUsingEncoding:NSUTF8StringEncoding];
     NSString* filename = [NSString stringWithFormat:@"String-%d.txt", stringCounter];
     stringCounter++;
-    return @{ @"data" : data, @"filename" : filename };
+    return @{
+        @"data" : data,
+        @"filename" : filename,
+        @"length" : [NSNumber numberWithUnsignedLong:data.length]
+    };
 }
 
 - (BOOL)sendDataDict:(NSDictionary*)data progress:(BOOL (^)(NSUInteger))progress
@@ -202,25 +229,33 @@ FileSender ()
     return [self sendDataDict:data progress:progress];
 }
 
-- (BOOL)sendData:(NSData*)data filename:(NSString*)filename progress:(BOOL (^)(NSUInteger))progress
+- (BOOL)sendData:(id)data filename:(NSString*)filename progress:(BOOL (^)(NSUInteger))progress
 {
     NSString* remoteFileName = [NSString stringWithFormat:@"%@/%@", remoteDirectory, filename];
-
+    BOOL failed = NO;
     TimeLog([NSString stringWithFormat:@"Saving to remote file with name %@", remoteFileName]);
 
-    if (![session.sftp writeContents:data toFileAtPath:remoteFileName progress:progress]) {
+    if ([data isKindOfClass:[NSData class]]) {
+        if (![session.sftp writeContents:data toFileAtPath:remoteFileName progress:progress])
+            failed = YES;
+    }
+
+    else if ([data isKindOfClass:[NSInputStream class]]) {
+        if (![session.sftp writeStream:data toFileAtPath:remoteFileName progress:progress])
+            failed = YES;
+    }
+
+    if (failed) {
         TimeLog(@"Couldn't write contents to remote.");
         [self couldntCreateFileOnRemote:YES];
         return NO;
     }
 
-    else {
-        TimeLog(@"Wrote contents succesfully!");
-        return YES;
-    }
+    TimeLog(@"Wrote contents succesfully!");
+    return YES;
 }
 
-- (BOOL)sendData:(NSData*)data filename:(NSString*)filename
+- (BOOL)sendData:(id)data filename:(NSString*)filename
 {
     return [self sendData:data filename:filename progress:nil];
 }

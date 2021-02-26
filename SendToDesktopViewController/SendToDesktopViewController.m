@@ -263,7 +263,7 @@ SendToDesktopViewController ()
                         return NO;
                     }
                     spawn_on_main_thread(^{
-                        NSUInteger totalSize = ((NSData*)data[@"data"]).length;
+                        NSUInteger totalSize = [data[@"length"] unsignedIntegerValue];
                         [self setProgress:sent total:totalSize];
                     });
                     return YES;
