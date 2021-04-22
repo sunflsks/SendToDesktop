@@ -20,6 +20,9 @@ dictWithPreferences(void)
 NSString*
 stringWithTimestamp(NSString* input)
 {
+    if (!input)
+        return nil;
+
     NSDate* date = [NSDate date];
     NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
 
@@ -34,8 +37,12 @@ stringWithTimestamp(NSString* input)
 void
 Log(NSString* tolog)
 {
+    if (!tolog)
+        return;
+
     if (!center)
         center = [MRYIPCCenter centerNamed:@"SendToDesktop/IPC"];
+
     [center callExternalMethod:@selector(SDLogger:)
                  withArguments:@{ @"message" : tolog ?: @"Unknown message" }];
 }
@@ -43,8 +50,12 @@ Log(NSString* tolog)
 void
 setPassword(NSString* passwordToSet)
 {
+    if (!passwordToSet)
+        return;
+
     if (!center)
         center = [MRYIPCCenter centerNamed:@"SendToDesktop/IPC"];
+
     [center callExternalMethod:@selector(SDPasswordSetter:) withArguments:passwordToSet];
 }
 
@@ -53,6 +64,7 @@ getPassword(void)
 {
     if (!center)
         center = [MRYIPCCenter centerNamed:@"SendToDesktop/IPC"];
+
     return [center callExternalMethod:@selector(SDPasswordGetter:) withArguments:nil];
 }
 
@@ -61,12 +73,16 @@ playSentSound(void)
 {
     if (!center)
         center = [MRYIPCCenter centerNamed:@"SendToDesktop/IPC"];
+
     [center callExternalMethod:@selector(playSentSound) withArguments:nil];
 }
 
 void
 fillOutDefaultPrefs(NSMutableDictionary* preferences)
 {
+    if (!preferences)
+        return nil;
+
     if ([preferences objectForKey:@"enabledui"] == nil) {
         [preferences setObject:@YES forKey:@"enabledui"];
     }
