@@ -39,3 +39,6 @@ fillOutDefaultPrefs(NSMutableDictionary* preferences);
 
 void
 initializeIPC(void);
+
+BOOL
+connectedToNetwork(void);

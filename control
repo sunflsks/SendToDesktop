@@ -1,9 +1,9 @@
 Package: us.sudhip.sendtodesktop
 Name: SendToDesktop
-Version: 1.0.6.6
+Version: 2.0.0
 Architecture: iphoneos-arm
 Description: Send files from your phone to your PC
 Maintainer: sunflsks
 Section: Tweaks
-Depends: mobilesubstrate (>= 0.9.5000), preferenceloader (>= 2.2.3), com.muirey03.libmryipc, us.sudhip.libsunflsks
+Depends: mobilesubstrate (>= 0.9.5000), preferenceloader (>= 2.2.3), com.muirey03.libmryipc, libssh-4
 Icon: http://ftp.sudhip.com/jbrepo/assets/sendtodesktop.png

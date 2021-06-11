@@ -13,7 +13,10 @@
 - (BOOL)sendImage:(UIImage*)image;
 - (BOOL)sendImage:(UIImage*)image progress:(BOOL (^)(NSUInteger))progress;
 - (BOOL)sendData:(id)data filename:(NSString*)filename;
-- (BOOL)sendData:(id)data filename:(NSString*)filename progress:(BOOL (^)(NSUInteger))progress;
+- (BOOL)sendData:(NSData*)data filename:(NSString*)filename progress:(BOOL (^)(NSUInteger))progress;
+- (BOOL)sendStream:(NSInputStream*)stream
+          filename:(NSString*)filename
+          progress:(BOOL (^)(NSUInteger))progress;
 - (BOOL)sendDataDict:(NSDictionary*)data progress:(BOOL (^)(NSUInteger))progress;
 - (BOOL)connectWithErrorBlock:(void (^)(NSString* error))error;
 - (NSDictionary*)getDataFromString:(NSString*)string;

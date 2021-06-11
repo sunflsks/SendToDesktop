@@ -2,6 +2,7 @@
 #include <MRYIPCCenter.h>
 #define DEFAULTS @"us.sudhip.stdp"
 #include "Utils.h"
+#include <Reachability/Reachability.h>
 #include <libssh2_sftp.h>
 
 static MRYIPCCenter* center;
@@ -81,7 +82,7 @@ void
 fillOutDefaultPrefs(NSMutableDictionary* preferences)
 {
     if (!preferences)
-        return nil;
+        return;
 
     if ([preferences objectForKey:@"enabledui"] == nil) {
         [preferences setObject:@YES forKey:@"enabledui"];
@@ -90,4 +91,13 @@ fillOutDefaultPrefs(NSMutableDictionary* preferences)
     if ([preferences[@"port"] length] == 0) {
         preferences[@"port"] = @22;
     }
+}
+
+BOOL
+connectedToNetwork(void)
+{
+    Reachability* reachability = [Reachability reachabilityForInternetConnection];
+    NetworkStatus status = [reachability currentReachabilityStatus];
+
+    return status == NotReachable ? FALSE : TRUE;
 }

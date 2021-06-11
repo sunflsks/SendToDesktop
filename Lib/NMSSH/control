@@ -1,9 +1,0 @@
-Package: us.sudhip.nmsshtheos
-Name: NMSSH
-Version: 0.0.1
-Architecture: iphoneos-arm
-Description: An awesome library of some sort!!
-Maintainer: Sudhip
-Author: Sudhip
-Section: System
-Tag: role::developer

@@ -1,19 +1,16 @@
 #import "FileSender.h"
 #import "../SendToDesktopActivity/SendToDesktopActivity.h"
 #import "../Utils/Utils.h"
-#import <NMSSH/NMSSH.h>
+#import <libssh/libssh.h>
+#import <libssh/sftp.h>
 #import <libsunflsks/Network.h>
 
-// Not ideal
-@interface
-NMSFTP ()
-@property (nonatomic, assign) LIBSSH2_SFTP* sftpSession;
-@end
+static NSString*
+stringFromSFTPErrorCode(int code);
 
 @interface
 FileSender ()
-- (int)getSFTPErrorCode;
-- (void)couldntCreateFileOnRemote:(BOOL)isFile;
+- (BOOL)createDirectoryOnRemoteIfNotExists:(NSString*)path;
 @end
 
 @implementation FileSender {
@@ -24,11 +21,13 @@ FileSender ()
     NSUInteger port;
 
     NSString* remoteDirectory;
-    NMSSHSession* session;
+    ssh_session session;
+    sftp_session sftpSession;
     void (^error)(NSString* error);
     int imageCounter;
     int dataCounter;
     int stringCounter;
+    int bufferLength;
 }
 
 + (BOOL)canSendObject:(id)object
@@ -78,6 +77,7 @@ FileSender ()
     imageCounter = 0;
     dataCounter = 0;
     stringCounter = 0;
+    bufferLength = 262000;
 
     NSDictionary* prefs = dictWithPreferences();
     hostName = prefs[@"hostname"];
@@ -93,6 +93,7 @@ FileSender ()
 
 - (BOOL)connectWithErrorBlock:(void (^)(NSString* error))errorBlock
 {
+    int rc = 0;
     error = errorBlock;
 
     if (!hostName || !userName || !password || !remoteDirectory) {
@@ -101,7 +102,7 @@ FileSender ()
         return NO;
     }
 
-    if (![SunflsksNetwork checkIfConnected]) {
+    if (!connectedToNetwork()) {
         TimeLog(@"Could not connect to network. Exiting");
         if (error != nil)
             error(@"Could not connect to network");
@@ -109,35 +110,95 @@ FileSender ()
     }
 
     TimeLog([NSString stringWithFormat:@"Connecting to host %@ with port %lu", hostName, port]);
-    session = [NMSSHSession connectToHost:hostName port:port withUsername:userName];
-    if (!session.isConnected) {
-        TimeLog(@"Could not connect to remote. Exiting");
-        if (error != nil)
-            error(@"Could not connect to remote.");
+    session = ssh_new();
+    if (session == NULL) {
+        error(@"Could not allocate SSH session.");
         return NO;
     }
 
-    [session authenticateByPassword:password];
-    if (!session.isAuthorized) {
-        TimeLog(@"Invalid credentials. Exiting");
+    ssh_options_set(session, SSH_OPTIONS_HOST, [hostName UTF8String]);
+    ssh_options_set(session, SSH_OPTIONS_PORT, &port);
+    ssh_options_set(session, SSH_OPTIONS_USER, [userName UTF8String]);
+
+    rc = ssh_connect(session);
+    if (rc != SSH_OK) {
+        TimeLog(@"Could not connect to remote.");
         if (error != nil)
-            error(@"Could not authenticate.");
-        [session disconnect];
+            error([NSString
+              stringWithFormat:@"Could not connect to remote - %s", ssh_get_error(session)]);
+        return NO;
+    }
+
+    rc = ssh_userauth_password(session, NULL, [password UTF8String]);
+    if (rc == SSH_AUTH_ERROR) {
+        TimeLog(@"Could not authenticate.");
+        if (error != nil)
+            error([NSString
+              stringWithFormat:@"Could not authenticate with server: %s", ssh_get_error(session)]);
         return NO;
     }
 
     TimeLog(@"Connected to remote!");
 
-    [session.sftp connect];
+    sftpSession = sftp_new(session);
+    if (!sftpSession) {
+        TimeLog(@"Could not create SFTP session.");
+        if (error != nil)
+            error(@"Could not create SFTP session");
+        return NO;
+    }
+
+    rc = sftp_init(sftpSession);
+    if (rc != SSH_OK) {
+        TimeLog(@"Could not initialize SFTP session.");
+        if (error != nil)
+            error([NSString stringWithFormat:@"Could not initialize SFTP session: %@",
+                                             stringFromSFTPErrorCode(sftp_get_error(sftpSession))]);
+        return NO;
+    }
 
     // Do this for the errno values, so there is a more descriptive error than "Uh oh!"
-    if (![session.sftp directoryExistsAtPath:remoteDirectory]) {
-        if (![session.sftp createDirectoryAtPath:remoteDirectory]) {
-            [self couldntCreateFileOnRemote:NO];
+    if (![self createDirectoryOnRemoteIfNotExists:remoteDirectory]) {
+        [self couldntCreateFileOnRemote:YES];
+        return NO;
+    }
+
+    return YES;
+}
+
+- (BOOL)createDirectoryOnRemoteIfNotExists:(NSString*)directory
+{
+    sftp_dir dir;
+    dir = sftp_opendir(sftpSession, [directory UTF8String]);
+    if (!dir) {
+        int err = sftp_get_error(sftpSession);
+
+        if (err == SSH_FX_NO_SUCH_PATH) {
+            TimeLog(@"Remote dir does not exist - creating");
+            err = sftp_mkdir(sftpSession, [directory UTF8String], S_IRWXU);
+            if (err != SSH_OK) {
+                if (sftp_get_error(sftpSession) != SSH_FX_FILE_ALREADY_EXISTS) {
+                    TimeLog(@"Could not create remote dir.");
+                    if (error != nil)
+                        error([NSString
+                          stringWithFormat:@"Could not create remote dir: %@",
+                                           stringFromSFTPErrorCode(sftp_get_error(sftpSession))]);
+                    return NO;
+                }
+            }
+        }
+
+        else {
+            TimeLog(@"Could not open remote dir");
+            if (error != nil)
+                error(
+                  [NSString stringWithFormat:@"Could not open remote dir: %@",
+                                             stringFromSFTPErrorCode(sftp_get_error(sftpSession))]);
             return NO;
         }
     }
 
+    sftp_closedir(dir);
     return YES;
 }
 
@@ -202,7 +263,25 @@ FileSender ()
 
 - (BOOL)sendDataDict:(NSDictionary*)data progress:(BOOL (^)(NSUInteger))progress
 {
-    return [self sendData:data[@"data"] filename:data[@"filename"] ?: @"Unknown" progress:progress];
+    if ([data[@"data"] isKindOfClass:[NSData class]]) {
+        return [self sendData:data[@"data"]
+                     filename:data[@"filename"] ?: @"Unknown"
+                     progress:progress];
+    }
+
+    else if ([data[@"data"] isKindOfClass:[NSInputStream class]]) {
+        return [self sendStream:data[@"data"]
+                       filename:data[@"filename"] ?: @"Unknown"
+                       progress:progress];
+    }
+
+    else {
+        if (error != nil)
+            error([NSString
+              stringWithFormat:@"Cannot send type of %@ - only NSData and NSInputStream supported.",
+                               NSStringFromClass([data[@"data"] class])]);
+        return nil;
+    }
 }
 
 - (BOOL)sendURL:(NSURL*)url
@@ -229,20 +308,60 @@ FileSender ()
     return [self sendDataDict:data progress:progress];
 }
 
-- (BOOL)sendData:(id)data filename:(NSString*)filename progress:(BOOL (^)(NSUInteger))progress
+- (BOOL)sendStream:(NSInputStream*)stream
+          filename:(NSString*)filename
+          progress:(BOOL (^)(NSUInteger))progress
 {
     NSString* remoteFileName = [NSString stringWithFormat:@"%@/%@", remoteDirectory, filename];
     BOOL failed = NO;
+    NSInteger rc = 0;
+    NSUInteger total = 0;
+    NSInteger bytesRead = 0;
+    sftp_file remote_file;
+    void* buffer = calloc(1, bufferLength);
+
     TimeLog([NSString stringWithFormat:@"Saving to remote file with name %@", remoteFileName]);
 
-    if ([data isKindOfClass:[NSData class]]) {
-        if (![session.sftp writeContents:data toFileAtPath:remoteFileName progress:progress])
-            failed = YES;
+    if ([stream streamStatus] == NSStreamStatusNotOpen)
+        [stream open];
+
+    remote_file =
+      sftp_open(sftpSession, [remoteFileName UTF8String], O_RDWR | O_CREAT | O_TRUNC, S_IRWXU);
+    if (!remote_file) {
+        TimeLog(@"Could not open remote file");
+        free(buffer);
+        [self couldntCreateFileOnRemote:YES];
+        return NO;
     }
 
-    else if ([data isKindOfClass:[NSInputStream class]]) {
-        if (![session.sftp writeStream:data toFileAtPath:remoteFileName progress:progress])
-            failed = YES;
+    while (rc >= 0 && [stream hasBytesAvailable]) {
+        bytesRead = [stream read:buffer maxLength:bufferLength];
+        if (bytesRead > 0) {
+            void* bufptr = buffer;
+            do {
+                rc = sftp_write(remote_file, bufptr, bytesRead);
+                if (rc < 0) {
+                    TimeLog(@"Couldn't write file to remote");
+                    failed = YES;
+                    goto err;
+                }
+
+                total += rc;
+                bufptr += rc;
+                bytesRead -= rc;
+                if (progress && !progress(total)) {
+                    failed = YES;
+                    goto err;
+                }
+            } while (bytesRead);
+        }
+    }
+
+err:
+    free(buffer);
+
+    if (bytesRead < 0 || rc < 0) {
+        failed = YES;
     }
 
     if (failed) {
@@ -255,23 +374,16 @@ FileSender ()
     return YES;
 }
 
+- (BOOL)sendData:(NSData*)data filename:(NSString*)filename progress:(BOOL (^)(NSUInteger))progress
+{
+    return [self sendStream:[NSInputStream inputStreamWithData:data]
+                   filename:filename
+                   progress:progress];
+}
+
 - (BOOL)sendData:(id)data filename:(NSString*)filename
 {
     return [self sendData:data filename:filename progress:nil];
-}
-
-- (int)getSFTPErrorCode
-{
-    if (!session)
-        return 1;
-    return libssh2_sftp_last_error(session.sftp.sftpSession);
-}
-
-- (void)disconnect
-{
-    [session.sftp disconnect];
-    [session disconnect];
-    TimeLog(@"Disconnected from remote");
 }
 
 // isFile is for choosing whether a file or a directory could not be created for a better error
@@ -282,29 +394,52 @@ FileSender ()
       initWithString:[NSString stringWithFormat:@"Could not create %@ %@: ",
                                                 isFile ? @"file" : @"directory",
                                                 remoteDirectory]];
-    int err = [self getSFTPErrorCode];
-
-    switch (err) {
-        case LIBSSH2_FX_NO_SUCH_FILE:
-        case LIBSSH2_FX_NO_SUCH_PATH:
-            [errorString appendString:@"Parent folder does not exist"];
-            break;
-
-        case LIBSSH2_FX_PERMISSION_DENIED: [errorString appendString:@"Permission denied"]; break;
-
-        case LIBSSH2_FX_FAILURE: [errorString appendString:@"General failure"]; break;
-
-        case LIBSSH2_FX_NOT_A_DIRECTORY: [errorString appendString:@"Not a folder"]; break;
-
-        case LIBSSH2_FX_INVALID_FILENAME:
-            [errorString appendString:@"Invalid name for folder"];
-            break;
-
-        default: [errorString appendString:@"Unknown error"];
-    }
+    NSString* sftp_err = stringFromSFTPErrorCode(sftp_get_error(sftpSession));
+    const char* ssh_err = ssh_get_error(session);
+    [errorString
+      appendString:[NSString
+                     stringWithFormat:@"SFTP Error: %@ - SSH Error: %s", sftp_err, ssh_err]];
 
     if (error != nil)
         error(errorString);
 }
 
+- (void)disconnect
+{
+    ssh_disconnect(session);
+}
+
+- (void)dealloc
+{
+    [self disconnect];
+
+    if (sftpSession)
+        sftp_free(sftpSession);
+
+    if (session)
+        ssh_free(session);
+}
+
 @end
+
+static NSString*
+stringFromSFTPErrorCode(int code)
+{
+    switch (code) {
+        case SSH_FX_OK: return @"No error";
+        case SSH_FX_EOF: return @"End of file";
+        case SSH_FX_NO_SUCH_FILE:
+        case SSH_FX_NO_SUCH_PATH: return @"No such file or directory";
+        case SSH_FX_PERMISSION_DENIED: return @"Permission denied";
+        case SSH_FX_BAD_MESSAGE: return @"Bad message";
+        case SSH_FX_NO_CONNECTION: return @"No connection in the first place";
+        case SSH_FX_CONNECTION_LOST: return @"Lost connection";
+        case SSH_FX_OP_UNSUPPORTED: return @"Unsupported by libssh";
+        case SSH_FX_INVALID_HANDLE: return @"Invalid file handle";
+        case SSH_FX_FILE_ALREADY_EXISTS: return @"File already exists";
+        case SSH_FX_WRITE_PROTECT: return @"Read only filesystem";
+        case SSH_FX_NO_MEDIA: return @"No media in remote drive. What the fuck are you doing??";
+    }
+
+    return @"Unknown error";
+}
