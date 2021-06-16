@@ -1,3 +1,6 @@
+#pragma once
+
+#include <Foundation/Foundation.h>
 NSDictionary*
 dictWithPreferences(void);
 
@@ -39,3 +42,12 @@ fillOutDefaultPrefs(NSMutableDictionary* preferences);
 
 void
 initializeIPC(void);
+
+BOOL
+connectedToNetwork(void);
+
+BOOL
+isVerifiedHost(NSString* hostname, NSData* fingerprint);
+
+void
+addHostnameAndKeyToVerifiedHosts(NSString* hostname, NSData* fingerprint);

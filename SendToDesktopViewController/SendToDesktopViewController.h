@@ -5,6 +5,8 @@
 //  Created by Sudhip Nashi on 1/23/21.
 //
 
+#pragma once
+
 #import <UIKit/UIKit.h>
 
 @interface SendToDesktopViewController : UIViewController

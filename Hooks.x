@@ -1,3 +1,5 @@
+// TODO: remove mryipc and do rpc myself with mig or something idk
+
 #import <Foundation/Foundation.h>
 #import "SendToDesktopActivity/SendToDesktopActivity.h"
 #include <MRYIPCCenter.h>
@@ -6,6 +8,7 @@
 #import "Utils/Utils.h"
 
 #define LOG_DEST "/tmp/SendToDesktop.log"
+#define HOSTNAME_VERIFICATION_DEST @"/User/.sendtodesktop-fingerprints"
 
 static AVAudioPlayer* sound = nil;
 
@@ -42,15 +45,17 @@ static MRYIPCCenter* center;
     [center addTarget:self action:@selector(SDPasswordGetter:)];
     [center addTarget:self action:@selector(SDPasswordSetter:)];
     [center addTarget:self action:@selector(playSentSound)];
+    [center addTarget:self action:@selector(isVerifiedHost:)];
+    [center addTarget:self action:@selector(addHostnameAndKeyToVerifiedHosts:)];
 
     sound = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:@"/System/Library/Audio/UISounds/navigation_pop.caf"] error:nil];
     %orig(arg1);
 }
 
 %new
--(void)SDLogger:(NSDictionary*)args {
+-(void)SDLogger:(NSString*)message {
     FILE* file = fopen(LOG_DEST, "a");
-    NSString* str = [NSString stringWithFormat:@"%@\n", args[@"message"]];
+    NSString* str = [NSString stringWithFormat:@"%@\n", message];
     fputs([str UTF8String], file);
     fclose(file);
 }
@@ -72,4 +77,36 @@ static MRYIPCCenter* center;
     if (sound == nil) return;
     [sound play];
 }
+
+%new
+-(void)addHostnameAndKeyToVerifiedHosts:(NSDictionary*)args {
+    NSString* hostname = args[@"hostname"];
+    NSData* fingerprint = args[@"fingerprint"];
+
+    NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
+    [dict addEntriesFromDictionary:[NSDictionary dictionaryWithContentsOfFile:HOSTNAME_VERIFICATION_DEST]];
+    dict[hostname] = fingerprint;
+    [dict writeToFile:HOSTNAME_VERIFICATION_DEST atomically:YES];
+}
+
+%new
+-(NSNumber*)isVerifiedHost:(NSDictionary*)args {
+    NSString* hostname = args[@"hostname"];
+    NSData* fingerprintToVerify = args[@"fingerprint"];
+
+    NSDictionary* dict = [[NSDictionary alloc] initWithContentsOfFile:HOSTNAME_VERIFICATION_DEST];
+    NSData* fingerprint = dict[hostname];
+
+    if (fingerprint == nil) {
+        // If no entry is found, just assume that the host is valid.
+        return @TRUE;
+    }
+
+    else if (![fingerprint isEqualToData:fingerprintToVerify]) {
+        return @FALSE;
+    }
+
+    return @TRUE;
+}
+
 %end

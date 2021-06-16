@@ -2,7 +2,11 @@
 #include <MRYIPCCenter.h>
 #define DEFAULTS @"us.sudhip.stdp"
 #include "Utils.h"
+#include <Reachability/Reachability.h>
 #include <libssh2_sftp.h>
+
+#define DEFAULT_SSH_PORT 22
+#define DEFAULT_CONNECTION_TIMEOUT_SECS 5
 
 static MRYIPCCenter* center;
 
@@ -26,7 +30,7 @@ stringWithTimestamp(NSString* input)
     NSDate* date = [NSDate date];
     NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
 
-    [formatter setDateFormat:@"[HH:MM:SS]"];
+    [formatter setDateFormat:@"[HH:mm:ss]"];
     NSString* dateString = [formatter stringFromDate:date];
 
     return [NSString stringWithFormat:@"%@ %@", dateString, input];
@@ -40,11 +44,7 @@ Log(NSString* tolog)
     if (!tolog)
         return;
 
-    if (!center)
-        center = [MRYIPCCenter centerNamed:@"SendToDesktop/IPC"];
-
-    [center callExternalMethod:@selector(SDLogger:)
-                 withArguments:@{ @"message" : tolog ?: @"Unknown message" }];
+    [center callExternalMethod:@selector(SDLogger:) withArguments:tolog];
 }
 
 void
@@ -53,27 +53,33 @@ setPassword(NSString* passwordToSet)
     if (!passwordToSet)
         return;
 
-    if (!center)
-        center = [MRYIPCCenter centerNamed:@"SendToDesktop/IPC"];
-
     [center callExternalMethod:@selector(SDPasswordSetter:) withArguments:passwordToSet];
 }
 
 NSString*
 getPassword(void)
 {
-    if (!center)
-        center = [MRYIPCCenter centerNamed:@"SendToDesktop/IPC"];
-
     return [center callExternalMethod:@selector(SDPasswordGetter:) withArguments:nil];
+}
+
+BOOL
+isVerifiedHost(NSString* hostname, NSData* fingerprint)
+{
+    return [[center callExternalMethod:@selector(isVerifiedHost:)
+                         withArguments:@{ @"hostname" : hostname, @"fingerprint" : fingerprint }]
+      boolValue];
+}
+
+void
+addHostnameAndKeyToVerifiedHosts(NSString* hostname, NSData* fingerprint)
+{
+    [center callExternalMethod:@selector(addHostnameAndKeyToVerifiedHosts:)
+                 withArguments:@{ @"hostname" : hostname, @"fingerprint" : fingerprint }];
 }
 
 void
 playSentSound(void)
 {
-    if (!center)
-        center = [MRYIPCCenter centerNamed:@"SendToDesktop/IPC"];
-
     [center callExternalMethod:@selector(playSentSound) withArguments:nil];
 }
 
@@ -81,13 +87,32 @@ void
 fillOutDefaultPrefs(NSMutableDictionary* preferences)
 {
     if (!preferences)
-        return nil;
+        return;
 
     if ([preferences objectForKey:@"enabledui"] == nil) {
         [preferences setObject:@YES forKey:@"enabledui"];
     }
 
     if ([preferences[@"port"] length] == 0) {
-        preferences[@"port"] = @22;
+        preferences[@"port"] = @DEFAULT_SSH_PORT;
     }
+
+    if ([preferences[@"timeout"] length] == 0) {
+        preferences[@"timeout"] = @DEFAULT_CONNECTION_TIMEOUT_SECS;
+    }
+}
+
+BOOL
+connectedToNetwork(void)
+{
+    Reachability* reachability = [Reachability reachabilityForInternetConnection];
+    NetworkStatus status = [reachability currentReachabilityStatus];
+
+    return status == NotReachable ? FALSE : TRUE;
+}
+
+__attribute__((__constructor__)) static void
+ctor(void)
+{
+    center = [MRYIPCCenter centerNamed:@"SendToDesktop/IPC"];
 }
