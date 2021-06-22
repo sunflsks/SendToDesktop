@@ -3,7 +3,6 @@
 #define DEFAULTS @"us.sudhip.stdp"
 #include "Utils.h"
 #include <Reachability/Reachability.h>
-#include <libssh2_sftp.h>
 
 #define DEFAULT_SSH_PORT 22
 #define DEFAULT_CONNECTION_TIMEOUT_SECS 5
