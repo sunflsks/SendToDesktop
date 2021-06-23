@@ -105,7 +105,7 @@ FileSender ()
     if (!self)
         return nil;
 
-    bufferLength = 262000;
+    bufferLength = 1638400;
 
     NSDictionary* prefs = dictWithPreferences();
     hostName = prefs[@"hostname"];
