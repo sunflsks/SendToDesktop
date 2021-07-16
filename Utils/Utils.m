@@ -1,5 +1,8 @@
 #import <Foundation/Foundation.h>
 #include <MRYIPCCenter.h>
+#include <openssl/bio.h>
+#include <openssl/evp.h>
+#include <openssl/pem.h>
 #define DEFAULTS @"us.sudhip.stdp"
 #include "Utils.h"
 #include <Reachability/Reachability.h>
@@ -101,6 +104,8 @@ fillOutDefaultPrefs(NSMutableDictionary* preferences)
     }
 }
 
+#ifdef NEED_NETWORK_UTILS
+
 BOOL
 connectedToNetwork(void)
 {
@@ -109,6 +114,67 @@ connectedToNetwork(void)
 
     return status == NotReachable ? FALSE : TRUE;
 }
+
+#endif
+
+#ifdef NEED_CRYPTO_UTILS
+
+NSData*
+publicKeyFromPrivate(NSString* privateKey)
+{
+    NSData* keyData = [privateKey dataUsingEncoding:NSUTF8StringEncoding];
+
+    char* rawKey = malloc([keyData length]);
+    memcpy(rawKey, [keyData bytes], [keyData length]);
+
+    BIO* bio = BIO_new_mem_buf(rawKey, [keyData length]);
+    if (!bio)
+        return nil;
+
+    EVP_PKEY* key = EVP_PKEY_new();
+    if (!key) {
+        BIO_free(bio);
+        free(rawKey);
+        return nil;
+    }
+
+    if (!PEM_read_bio_PrivateKey(bio, &key, NULL, NULL)) {
+        EVP_PKEY_free(key);
+        BIO_free(bio);
+        free(rawKey);
+        return nil;
+    }
+
+    BIO* output = BIO_new(BIO_s_mem());
+    if (!output) {
+        EVP_PKEY_free(key);
+        BIO_free(bio);
+        free(rawKey);
+        return nil;
+    }
+
+    if (!PEM_write_bio_PUBKEY(output, key)) {
+        BIO_free(output);
+        EVP_PKEY_free(key);
+        BIO_free(bio);
+        free(rawKey);
+        return nil;
+    }
+
+    char* pubkey;
+    long len = BIO_get_mem_data(output, &pubkey);
+
+    NSData* data = [NSData dataWithBytes:pubkey length:len];
+
+    BIO_free(bio);
+    BIO_free(output);
+    EVP_PKEY_free(key);
+    free(rawKey);
+
+    return data;
+}
+
+#endif
 
 __attribute__((__constructor__)) static void
 ctor(void)
