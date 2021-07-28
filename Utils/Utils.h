@@ -10,11 +10,11 @@ stringWithTimestamp(NSString* input);
 void
 Log(NSString*);
 
-void
-setPassword(NSString* passwordToSet);
-
 NSString*
 getPassword(void);
+
+NSString*
+getPrivateKey(void);
 
 void
 playSentSound(void);
