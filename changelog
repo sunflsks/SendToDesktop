@@ -6,6 +6,4 @@
 1.0.5: Move NMSSH itself inside of the tree
 1.0.5.1: Do not abort the transfer if the object is invalid
 1.0.6: Add support for iOS 12 and lower, and add option for changing SSH port
-2.0.0 (Planned): Complete rewrite of core logic, use libssh instead of NMSSH+libssh2, should bring significant speed improvements
-2.0.1 (Planned): Use mig instead of MRYIPC
-2.0.1 (Planned): Add support for SSH keys
+2.0.0: Complete rewrite with libssh2, and public-key authentication support
