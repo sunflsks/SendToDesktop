@@ -6,8 +6,7 @@
 //  Copyright (c) 2011 Kishikawa Katsumi. All rights reserved.
 //
 
-// #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-// #pragma message "Deprecated behavior inside!"
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 #import <UICKeyChainStore/UICKeyChainStore.h>
 
 NSString* const UICKeyChainStoreErrorDomain = @"com.kishikawakatsumi.uickeychainstore";
