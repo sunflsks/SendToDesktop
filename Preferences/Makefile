@@ -5,7 +5,7 @@ include $(THEOS)/makefiles/common.mk
 BUNDLE_NAME = SendToDesktopPreferences
 
 ARCHS = arm64 arm64e
-SendToDesktopPreferences_FILES = SDPRootListController.m Utils.m
+SendToDesktopPreferences_FILES = SDPRootListController.m ../lib/UICKeyChainStore/UICKeyChainStore.m
 SendToDesktopPreferences_FRAMEWORKS = UIKit
 SendToDesktopPreferences_PRIVATE_FRAMEWORKS = Preferences
 SendToDesktopPreferences_INSTALL_PATH = /Library/PreferenceBundles
