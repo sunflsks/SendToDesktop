@@ -47,6 +47,7 @@ FileSender ()
     int timeout;
 
     NSString* remoteDirectory;
+    NSString* privateKey;
     LIBSSH2_SESSION* session;
     LIBSSH2_SESSION* session_dealloc;
     LIBSSH2_SFTP* sftp_session;
@@ -56,6 +57,7 @@ FileSender ()
     int stringCounter;
     int bufferLength;
     int sockfd;
+    BOOL usePrivateKey;
 }
 @synthesize session = session;
 @synthesize sftp_session = sftp_session;
@@ -114,6 +116,11 @@ FileSender ()
     port = [prefs[@"port"] intValue];
     timeout = [prefs[@"timeout"] intValue];
     remoteDirectory = prefs[@"directory"];
+    usePrivateKey = [prefs[@"usePrivateKey"] boolValue];
+    if (usePrivateKey) {
+        privateKey = getPrivateKey();
+        NSLog(@"SendToDesktop private key is %@ main", privateKey);
+    }
 
     return self;
 }
@@ -224,7 +231,29 @@ FileSender ()
         return NO;
     }
 
-    if (libssh2_userauth_password(session, [userName UTF8String], [password UTF8String])) {
+    if (usePrivateKey) {
+        // I can't figure out how to get in-memory keys to work properly, so for the time being
+        // just write the key to a temporary file then unlink it ASAP
+
+        NSString* tmpName = [NSTemporaryDirectory()
+          stringByAppendingPathComponent:[[NSProcessInfo processInfo] globallyUniqueString]];
+
+        [getPrivateKey() writeToFile:tmpName
+                          atomically:YES
+                            encoding:NSUTF8StringEncoding
+                               error:nil];
+
+        rc = libssh2_userauth_publickey_fromfile(
+          session, [userName UTF8String], NULL, [tmpName UTF8String], NULL);
+
+        unlink([tmpName UTF8String]);
+    }
+
+    else {
+        rc = libssh2_userauth_password(session, [userName UTF8String], [password UTF8String]);
+    }
+
+    if (rc) {
         TimeLog(@"Could not authenticate");
         _internal_error(session, NULL, 0, error, @"Could not authenticate with given credentials");
         [self disconnect];
@@ -519,18 +548,18 @@ _internal_error(LIBSSH2_SESSION* session,
         if (session) {
             char* ssh_buf = NULL;
             libssh2_session_last_error(session, &ssh_buf, NULL, 1);
-            [string appendString:[NSString stringWithFormat:@"Session Error: %s\n", ssh_buf]];
+            [string appendString:[NSString stringWithFormat:@"\n\nSession Error: %s", ssh_buf]];
             free(ssh_buf);
         }
 
         if (sftp_session) {
             int err = libssh2_sftp_last_error(sftp_session);
-            [string appendString:[NSString stringWithFormat:@"SFTP Error Number: %d\n", err]];
+            [string appendString:[NSString stringWithFormat:@"\n\nSFTP Error Number: %d", err]];
         }
 
         if (posix_error) {
             int err = errno;
-            [string appendString:[NSString stringWithFormat:@"POSIX Error: %s\n", strerror(err)]];
+            [string appendString:[NSString stringWithFormat:@"\n\nPOSIX Error: %s", strerror(err)]];
         }
 
         error_block(string);

@@ -15,7 +15,7 @@ FileSender/FileSender.m \
 SendToDesktopViewController/SendToDesktopViewController.m \
 FileSender/FileSender.m
 
-SendToDesktop_CFLAGS = -fobjc-arc -I./include -Wall -Werror -Wno-unused-command-line-argument
+SendToDesktop_CFLAGS = -fobjc-arc -I./include -Wall -Werror -Wno-unused-command-line-argument -DNEED_NETWORK_UTILS
 SendToDesktop_LDFLAGS = -L./lib
 SendToDesktop_LIBRARIES = z mryipc ssh2+openssl
 include $(THEOS_MAKE_PATH)/tweak.mk

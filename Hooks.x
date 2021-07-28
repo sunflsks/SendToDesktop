@@ -42,8 +42,8 @@ static MRYIPCCenter* center;
 -(void)applicationDidFinishLaunching:(id)arg1 {
     center = [MRYIPCCenter centerNamed:@"SendToDesktop/IPC"];
     [center addTarget:self action:@selector(SDLogger:)];
-    [center addTarget:self action:@selector(SDPasswordGetter:)];
-    [center addTarget:self action:@selector(SDPasswordSetter:)];
+    [center addTarget:self action:@selector(SDPasswordGetter)];
+    [center addTarget:self action:@selector(SDPrivateKeyGetter)];
     [center addTarget:self action:@selector(playSentSound)];
     [center addTarget:self action:@selector(isVerifiedHost:)];
     [center addTarget:self action:@selector(addHostnameAndKeyToVerifiedHosts:)];
@@ -61,15 +61,9 @@ static MRYIPCCenter* center;
 }
 
 %new
--(NSString*)SDPasswordGetter:(NSString*)credentials {
+-(NSString*)SDPasswordGetter {
     UICKeyChainStore* dict = [UICKeyChainStore keyChainStoreWithService:@"SendToDesktop/Keychain"];
     return dict[@"password"];
-}
-
-%new
--(void)SDPasswordSetter:(NSString*)password {
-    UICKeyChainStore* dict = [UICKeyChainStore keyChainStoreWithService:@"SendToDesktop/Keychain"];
-    dict[@"password"] = password;
 }
 
 %new
@@ -107,6 +101,12 @@ static MRYIPCCenter* center;
     }
 
     return @TRUE;
+}
+
+%new
+-(NSString*)SDPrivateKeyGetter {
+    UICKeyChainStore* dict = [UICKeyChainStore keyChainStoreWithService:@"SendToDesktop/Keychain"];
+    return dict[@"privkey"];
 }
 
 %end
