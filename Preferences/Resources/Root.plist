@@ -160,6 +160,58 @@
                 <key>isNumeric</key>
                 <true/>
             </dict>
+
+            <dict>
+                <key>cell</key>
+                <string>PSGroupCell</string>
+
+                <key>label</key>
+                <string>Public-Key</string>
+            </dict>
+
+            <dict>
+                <key>cell</key>
+                <string>PSSwitchCell</string>
+
+                <key>label</key>
+                <string>Use Public-Key Authentication</string>
+
+                <key>default</key>
+                <true/>
+
+                <key>id</key>
+                <string>PrivateKeySwitch</string>
+
+                <key>key</key>
+                <string>usePrivateKey</string>
+            </dict>
+
+            <dict>
+                <key>cell</key>
+                <string>PSEditTextViewCell</string>
+
+                <key>defaults</key>
+                <string>us.sudhip.stdp</string>
+
+                <key>key</key>
+                <string>privateKey</string>
+
+                <key>noAutoCorrect</key>
+                <true/>
+
+                <key>height</key>
+                <real>200</real>
+
+                <key>id</key>
+                <string>PrivateKeyCell</string>
+
+                <key>placeholder</key>
+                <string>SSH Private Key</string>
+
+                <key>cellClass</key>
+                <string>SDTextViewTableCell</string>
+            </dict>
+
             <dict>
                 <key>cell</key>
                 <string>PSGroupCell</string>
